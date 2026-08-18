@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function getTraceId(opName) {
         const mapping = {
             "編輯用戶": 3, "编辑用户": 3,
-            "查看詳情": 17, "查看详情": 17,
-            "額度修改": 9, "额度修改": 9,
+            "查看詳情": 17, "查看详情": 17, "详情": 17,
+            "額度修改": 9, "额度修改": 9, "修改余额": 9,
             "資金明細": 7, "资金明细": 7,
             "注單明細": 8, "注单明细": 8,
             "修改密碼": 35, "修改密码": 35,
@@ -17,12 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             "支付層級": 4, "支付层级": 4,
             "交易設定": 10, "交易设定": 10,
-            "代理变更": 11, "代理變更": 11,
+            "代理变更": 11, "代理變更": 11, "变更代理": 11,
             "第三方游戏": 15, "第三方遊戲": 15,
-            "积分修改": 16, "積分修改": 16,
+            "积分修改": 16, "積分修改": 16, "积分调整": 16,
             "稽核记录": 18, "稽核紀錄": 18,
-            "代理变更记录": 19, "代理變更紀錄": 19,
             "回访备注": 21,
+            "备注": 21,
             "隐藏资金明细": 22, "隱藏資金明細": 22,
             "快速登录变更": 25, "快速登錄變更": 25,
             "谷歌验证码": 31, "谷歌驗證碼": 31,
@@ -31,7 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
             "赔率设置": 38, "賠率設置": 38,
             "校验用户任务": 45,
             "编辑标签": 47, "編輯標籤": 47,
-            "用户标签编辑记录": 48, "編輯標籤紀錄": 48
+            "用户标签编辑记录": 48, "編輯標籤紀錄": 48,
+            "编辑提款信息": 3, // Assuming edit withdraw maps to general edit or specific one
+            "体育返水": null // No specific permission known, map to null to always show
         };
         return mapping[opName] || null;
     }
@@ -61,10 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const globalMenu = document.getElementById('globalCompactActionMenu');
         if (!globalMenu) return;
         const compactActionItems = [
-            "编辑用户", "查看详情", "额度修改", "资金明细", "注单明细", "修改密码", "下级会员", "下级报表", "下级注单",
+            "编辑用户", "详情", "资金明细", "注单明细", "体育返水",
             "---",
-            "交易设定", "赔率设置", "积分修改", "代理变更", "第三方游戏", "稽核记录", "代理变更记录", "回访备注",
-            "隐藏资金明细", "快速登录变更", "校验用户任务", "谷歌验证码", "链上地址", "额度修改(链上充值)", "编辑标签", "用户标签编辑记录"
+            "编辑提款信息", "修改余额", "积分调整", "变更代理", "第三方游戏",
+            "稽核记录", "备注", "回访备注", "隐藏资金明细", "校验用户任务",
+            "链上地址", "额度修改(链上充值)", "编辑标签", "用户标签编辑记录"
         ];
         
         let filteredItems = compactActionItems.filter(item => item === '---' || shouldShowOp(item));
@@ -152,6 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropdownVip = document.getElementById('dropdownVip');
     const dropdownOther = document.getElementById('dropdownOther');
     const dropdownTagsSearch = document.getElementById('dropdownTagsSearch');
+    const dropdownDeviceType = document.getElementById('dropdownDeviceType');
+    const dropdownCountry = document.getElementById('dropdownCountry');
     const inputAccount = document.getElementById('inputAccount');
 
     // Account Type Dropdown Controls
@@ -413,6 +418,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Custom selections state
     let selectedStatusVal = '';
     let selectedLevelVal = '';
+    let selectedDeviceTypeVal = '';
+    let selectedCountryVal = '';
     let selectedBirthdayOuterVal = '';
     
     const dropdownBirthdayOuter = document.getElementById('dropdownBirthdayOuter');
@@ -431,6 +438,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof dropdownLevel !== 'undefined' && dropdownLevel) {
         initSingleSelect(dropdownLevel, (val) => {
             selectedLevelVal = val;
+        });
+    }
+
+    if (typeof dropdownDeviceType !== 'undefined' && dropdownDeviceType) {
+        initSingleSelect(dropdownDeviceType, (val) => {
+            selectedDeviceTypeVal = val;
+        });
+    }
+
+    if (typeof dropdownCountry !== 'undefined' && dropdownCountry) {
+        initSingleSelect(dropdownCountry, (val) => {
+            selectedCountryVal = val;
         });
     }
 
@@ -528,16 +547,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Nested Visibility State
     const nestedColumnsConfig = [
-        { id: 'online', label: '在線' },
-        { id: 'avatar', label: '頭像' },
-        { id: 'memberInfo', label: '會員信息' },
-        { id: 'levelTeam', label: '等級&團隊' },
-        { id: 'creditLimit', label: '信用&額度' },
-        { id: 'depositWithdraw', label: '存取款', requirePerm: 7 },
-        { id: 'tags', label: '標籤' },
-        { id: 'status', label: '狀態' },
+        { id: 'online', label: '在线' },
+        { id: 'avatar', label: '头像' },
+        { id: 'memberInfo', label: '会员信息' },
+        { id: 'levelTeam', label: '层级&团队' },
+        { id: 'creditLimit', label: '信用 & 额度' },
+        { id: 'depositWithdraw', label: '存提款', requirePerm: 7 },
+        { id: 'tags', label: '标签' },
+        { id: 'status', label: '状态' },
         { id: 'dateInfo', label: '日期信息' },
-        { id: 'remark', label: '備註', requirePerm: 21 }
+        { id: 'remark', label: '备注', requirePerm: 21 }
     ];
     let nestedColumnVisibility = {};
     let tempNestedColumnVisibility = {};
@@ -608,41 +627,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const compactColumnsConfig = [
-        { id: 'uid', group: '基本', label: '用戶ID', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="uid">${renderDataState(user.uid, 'copyable')}</td>` },
-        { id: 'account', group: '基本', label: '會員名', checkboxIndex: 3, render: (user) => `<td data-col="account"><a href="#" class="cell-username user-detail-link" data-uid="${user.uid}">${renderDataState(user.account, 'copyable')}</a></td>` },
-        { id: 'online', group: '狀態', label: '在線', checkboxIndex: 1, render: (user) => `<td data-col="online"><span class="status-dot-icon" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${user.offlineDays === 0 ? '#10b981' : '#9ca3af'};"></span></td>` },
-        { id: 'status', group: '狀態', label: '狀態', checkboxIndex: 1, render: (user) => `<td data-col="status"><span class="user-custom-tag ${user.status === '正常' ? 'tag-green' : user.status === '冻结' ? 'tag-blue' : 'tag-red'}">${user.status}</span></td>` },
-        { id: 'avatar', group: '狀態', label: '頭像', checkboxIndex: 2, render: (user) => `<td data-col="avatar"><div class="avatar-cell" style="width:24px;height:24px;border-radius:50%;background:#3b82f6;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;margin:0 auto;">${user.account.charAt(0).toLowerCase()}</div></td>` },
-        { id: 'realName', group: '帳號', label: '真實姓名', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="realName">${hasPerm(37) ? renderDataState(user.realName) : window.maskRealName(user.realName)}</td>` },
-        { id: 'nickname', group: '帳號', label: '暱稱', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="nickname">${(user.nickname && user.nickname !== '-') ? user.nickname : renderDataState(user.account)}</td>` },
-        { id: 'agentId', group: '會員信息（詳細）', label: '代理', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="agentId">${renderDataState(user.agentId)}</td>` },
-        { id: 'inviter', group: '會員信息（詳細）', label: '邀請人', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="inviter">${renderDataState(user.inviter)}</td>` },
-        { id: 'registerMode', group: '會員信息（詳細）', label: '註冊模式', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="registerMode">${user.registerMode}</td>` },
-        { id: 'phone', group: '會員信息（詳細）', label: '手機號', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="phone">${getPhoneStatusHtml(user.phone)}</td>` },
-        { id: 'payLevel', group: '等級 & 團隊', label: '支付層級', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="payLevel">${hasPerm(4) ? user.payLevel : '***'}</td>` },
-        { id: 'growth', group: '等級 & 團隊', label: '成長值', sortable: true, checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="growth">${user.growth}</td>` },
-        { id: 'level', group: '等級 & 團隊', label: '等級', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="level">${user.level}</td>` },
-        { id: 'accountType', group: '等級 & 團隊', label: '帳號類型', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="accountType">${user.accountType}</td>` },
-        { id: 'userType', group: '等級 & 團隊', label: '會員類型', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="userType">${user.userType}</td>` },
-        { id: 'inviteCode', group: '等級 & 團隊', label: '邀請碼', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="inviteCode">${user.inviteCode}</td>` },
-        { id: 'directTeam', group: '等級 & 團隊', label: '直屬下級/團隊數', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="directTeam"><a href="#" class="subordinate-link" style="color: var(--primary-color); text-decoration: underline;" data-uid="${user.uid}">${hasPerm(6) ? user.directTeam : '*/*'}</a></td>` },
-        { id: 'vipLevel', group: '等級 & 團隊', label: 'VIP等級', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="vipLevel">${user.vipLevel}</td>` },
-        { id: 'vipGrowth', group: '等級 & 團隊', label: 'VIP成長值', sortable: true, checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="vipGrowth">${user.vipGrowth}</td>` },
-        { id: 'creditValue', group: '信用 & 額度', label: '信用值', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="creditValue">${hasPerm(7) ? user.creditValue : '***'}</td>` },
-        { id: 'availableCredit', group: '信用 & 額度', label: '可用額度', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="availableCredit">${user.availableCredit}</td>` },
-        { id: 'commissionBal', group: '信用 & 額度', label: '佣金餘額', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-money ${hasPerm(7) && user.commissionBal > 0 ? 'positive' : ''}" data-col="commissionBal">${hasPerm(7) ? (user.commissionBal > 0 ? user.commissionBal : '0') : '***'}</td>` },
-        { id: 'balanceBuy', group: '信用 & 額度', label: '餘額買', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-money ${user.balanceBuy > 0 ? 'highlight' : ''}" data-col="balanceBuy">${user.balanceBuy > 0 ? user.balanceBuy : '0'}</td>` },
-        { id: 'arrears', group: '信用 & 額度', label: '欠款', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-money ${hasPerm(7) && user.arrears === '0' ? 'negative' : ''}" style="color:${hasPerm(7) && user.arrears === '0' ? '#ef4444' : 'inherit'};" data-col="arrears">${hasPerm(7) ? renderDataState(user.arrears) : '***'}</td>` },
-        { id: 'interest', group: '信用 & 額度', label: '餘額買利息', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="interest">${user.interest}</td>` },
-        { id: 'thirdBal', group: '信用 & 額度', label: '三方餘額', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="thirdBal"><div style="display:flex;align-items:center;">${user.thirdBal > 0 ? user.thirdBal : '0'} <i class="ph ph-arrows-clockwise refresh-icon-compact" data-uid="${user.uid}" title="刷新餘額"></i></div></td>` },
-        { id: 'points', group: '信用 & 額度', label: '會員積分', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="points">${user.points}</td>` },
-        { id: 'deposit', group: '存取款', label: '存款總額', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-money ${user.deposit > 0 ? 'highlight' : ''}" data-col="deposit">${user.deposit > 0 ? user.deposit : '0'}</td>` },
-        { id: 'withdraw', group: '存取款', label: '取款總額', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-money" data-col="withdraw">${user.withdraw > 0 ? user.withdraw : '0'}</td>` },
-        { id: 'withdrawPre', group: '存取款', label: '提款扣金額', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="withdrawPre">${renderDataState(user.withdrawPre)}</td>` },
-        { id: 'adminDeduct', group: '存取款', label: '後台扣款總額', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="adminDeduct">${renderDataState(user.adminDeduct)}</td>` },
-        { id: 'depositCount', group: '存取款', label: '存款次數', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="depositCount">${user.depositCount}</td>` },
-        { id: 'withdrawCount', group: '存取款', label: '取款次數', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="withdrawCount">${user.withdrawCount}</td>` },
-        { id: 'tags', group: '其他', label: '標籤', checkboxIndex: 7, render: (user) => {
+        { id: 'uid', group: '基本', label: '用户ID', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="uid">${renderDataState(user.uid, 'copyable')}</td>` },
+        { id: 'account', group: '基本', label: '会员名', checkboxIndex: 3, render: (user) => `<td data-col="account"><a href="#" class="cell-username user-detail-link" data-uid="${user.uid}">${renderDataState(user.account, 'copyable')}</a></td>` },
+        { id: 'online', group: '状态', label: '在线', checkboxIndex: 1, render: (user) => `<td data-col="online"><span class="status-dot-icon" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${user.offlineDays === 0 ? '#10b981' : '#9ca3af'};"></span></td>` },
+        { id: 'status', group: '状态', label: '状态', checkboxIndex: 1, render: (user) => `<td data-col="status"><span class="user-custom-tag ${user.status === '正常' ? 'tag-green' : user.status === '冻结' ? 'tag-blue' : 'tag-red'}">${user.status}</span></td>` },
+        { id: 'avatar', group: '状态', label: '头像', checkboxIndex: 2, render: (user) => `<td data-col="avatar"><div class="avatar-cell" style="width:24px;height:24px;border-radius:50%;background:#3b82f6;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;margin:0 auto;">${user.account.charAt(0).toLowerCase()}</div></td>` },
+        { id: 'realName', group: '账号', label: '真实姓名', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="realName">${hasPerm(37) ? renderDataState(user.realName) : window.maskRealName(user.realName)}</td>` },
+        { id: 'nickname', group: '账号', label: '昵称', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="nickname">${(user.nickname && user.nickname !== '-') ? user.nickname : renderDataState(user.account)}</td>` },
+        { id: 'agentId', group: '会员信息（详细）', label: '代理', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="agentId">${renderDataState(user.agentId)}</td>` },
+        { id: 'inviter', group: '会员信息（详细）', label: '邀请人', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="inviter">${renderDataState(user.inviter)}</td>` },
+        { id: 'registerMode', group: '会员信息（详细）', label: '注册模式', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="registerMode">${user.registerMode || '一般注册'}</td>` },
+        { id: 'phone', group: '会员信息（详细）', label: '手机号', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="phone">${getPhoneStatusHtml(user.phone)}</td>` },
+        { id: 'deviceType', group: '会员信息（详细）', label: '设备类型', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="deviceType">${user.deviceType || ''}</td>` },
+        { id: 'currency', group: '会员信息（详细）', label: '用户币别', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="currency"><span style="color: #ef4444;">${user.currency || 'BRL'}</span></td>` },
+        { id: 'country', group: '会员信息（详细）', label: '国家', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="country"><span style="color: #ef4444;">${user.country || '巴西'}</span></td>` },
+        { id: 'payLevel', group: '等级 & 团队', label: '支付层级', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="payLevel">${hasPerm(4) ? (user.payLevel || '默认层') : '***'}</td>` },
+        { id: 'growth', group: '等级 & 团队', label: '成长值', sortable: true, checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="growth">${user.growth || 0}</td>` },
+        { id: 'level', group: '等级 & 团队', label: '等级', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="level">${user.level || '默认层'}</td>` },
+        { id: 'accountType', group: '等级 & 团队', label: '账号类型', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="accountType">${user.accountType || '普通账号'}</td>` },
+        { id: 'userType', group: '等级 & 团队', label: '会员类型', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="userType">${user.userType || '代理会员'}</td>` },
+        { id: 'inviteCode', group: '等级 & 团队', label: '邀请码', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="inviteCode">${user.inviteCode || ''}</td>` },
+        { id: 'directTeam', group: '等级 & 团队', label: '直属下级/团队数', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="directTeam"><a href="#" class="subordinate-link" style="color: var(--primary-color); text-decoration: underline;" data-uid="${user.uid}">${hasPerm(6) ? (user.directTeam || '0/0') : '*/*'}</a></td>` },
+        { id: 'vipLevel', group: '等级 & 团队', label: 'VIP等级', checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="vipLevel">${user.vipLevel || 0}</td>` },
+        { id: 'vipGrowth', group: '等级 & 团队', label: 'VIP成长值', sortable: true, checkboxIndex: 4, render: (user) => `<td class="cell-val" data-col="vipGrowth">${user.vipGrowth || 0}</td>` },
+        { id: 'creditValue', group: '信用 & 额度', label: '信用值', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="creditValue">${hasPerm(7) ? (user.creditValue || 0) : '***'}</td>` },
+        { id: 'availableCredit', group: '信用 & 额度', label: '可用额度', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="availableCredit">${user.availableCredit || '59,711.53'}</td>` },
+        { id: 'commissionBal', group: '信用 & 额度', label: '佣金余额', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-money ${hasPerm(7) && user.commissionBal > 0 ? 'positive' : ''}" data-col="commissionBal">${hasPerm(7) ? (user.commissionBal > 0 ? user.commissionBal : '0.00') : '***'}</td>` },
+        { id: 'balanceBuy', group: '信用 & 额度', label: '余额宝', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-money ${user.balanceBuy > 0 ? 'highlight' : ''}" data-col="balanceBuy">${user.balanceBuy > 0 ? user.balanceBuy : '0.00'}</td>` },
+        { id: 'arrears', group: '信用 & 额度', label: '欠款', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-money ${hasPerm(7) && user.arrears === '0' ? 'negative' : ''}" style="color:${hasPerm(7) && user.arrears === '0' ? '#ef4444' : 'inherit'};" data-col="arrears">${hasPerm(7) ? renderDataState(user.arrears || '0.00') : '***'}</td>` },
+        { id: 'interest', group: '信用 & 额度', label: '余额宝利息', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="interest">${user.interest || '0.00'}</td>` },
+        { id: 'thirdBal', group: '信用 & 额度', label: '三方余额', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="thirdBal"><div style="display:flex;align-items:center;">${user.thirdBal > 0 ? user.thirdBal : '0.00'} <i class="ph ph-arrows-clockwise refresh-icon-compact" data-uid="${user.uid}" title="刷新余额"></i></div></td>` },
+        { id: 'points', group: '信用 & 额度', label: '会员积分', sortable: true, checkboxIndex: 5, render: (user) => `<td class="cell-val" data-col="points">${user.points || '0.00'}</td>` },
+        { id: 'deposit', group: '存提款', label: '存款总额', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-money ${user.deposit > 0 ? 'highlight' : ''}" data-col="deposit">${user.deposit > 0 ? user.deposit : '0.00'}</td>` },
+        { id: 'withdraw', group: '存提款', label: '提款总额', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-money" data-col="withdraw">${user.withdraw > 0 ? user.withdraw : '0.00'}</td>` },
+        { id: 'depositCount', group: '存提款', label: '存款次数', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="depositCount">${user.depositCount || 0}</td>` },
+        { id: 'withdrawCount', group: '存提款', label: '提款次数', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="withdrawCount">${user.withdrawCount || 0}</td>` },
+        { id: 'adminAdd', group: '存提款', label: '后台加款总额', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="adminAdd">${user.adminAdd || '50,000.00'}</td>` },
+        { id: 'adminDeduct', group: '存提款', label: '后台扣款总额', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="adminDeduct">${user.adminDeduct || '0.00'}</td>` },
+        { id: 'adminActivityAdd', group: '存提款', label: '后台活动加款总额', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="adminActivityAdd">${user.adminActivityAdd || '0.00'}</td>` },
+        { id: 'adminAddCount', group: '存提款', label: '后台加款次数', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="adminAddCount">${user.adminAddCount || 1}</td>` },
+        { id: 'adminDeductCount', group: '存提款', label: '后台扣款次数', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="adminDeductCount">${user.adminDeductCount || 0}</td>` },
+        { id: 'adminActivityAddCount', group: '存提款', label: '后台活动加款次数', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="adminActivityAddCount">${user.adminActivityAddCount || 0}</td>` },
+        { id: 'quickDeposit', group: '存提款', label: '免提直充充值总额', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="quickDeposit">${user.quickDeposit || '0.00'}</td>` },
+        { id: 'quickDepositCount', group: '存提款', label: '免提直充充值次数', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="quickDepositCount">${user.quickDepositCount || 0}</td>` },
+        { id: 'quickWithdraw', group: '存提款', label: '免提直充提款总额', sortable: true, checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="quickWithdraw">${user.quickWithdraw || '0.00'}</td>` },
+        { id: 'quickWithdrawCount', group: '存提款', label: '免提直充提款次数', checkboxIndex: 6, requirePerm: 7, render: (user) => `<td class="cell-val" data-col="quickWithdrawCount">${user.quickWithdrawCount || 0}</td>` },
+        { id: 'tags', group: '其他', label: '标签', checkboxIndex: 7, render: (user) => {
             const tagStyles = {
                 '正常': 'tag-blue',
                 'VIP 客戶': 'tag-blue',
@@ -740,13 +770,13 @@ document.addEventListener('DOMContentLoaded', () => {
             </td>`;
         } },
 
-        { id: 'date', group: '日期信息', label: '新增時間', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="date">${user.date}</td>` },
-        { id: 'lastLogin', group: '日期信息', label: '最後登錄', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="lastLogin">${user.lastLogin}</td>` },
-        { id: 'offlineDays', group: '日期信息', label: '離開天數', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="offlineDays">${user.offlineDays}</td>` },
-        { id: 'ip', group: '日期信息', label: '登錄IP', checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="ip"><div class="ip-row" style="display: flex; align-items: center; gap: 4px;">${hasPerm(17) ? renderDataState(user.ip, 'ip') : window.maskIp(user.ip)}</div></td>` },
-        { id: 'remark', group: '備註', label: '備註', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="remark">${user.remark}</td>` },
-        { id: 'followRemark', group: '備註', label: '回訪備註', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="followRemark">${user.followRemark}</td>` },
-        { id: 'note', group: '備註', label: '注', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="note">${user.note}</td>` },
+        { id: 'date', group: '日期信息', label: '新增时间', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="date">${user.date || '28-08-18 01:17'}</td>` },
+        { id: 'lastLogin', group: '日期信息', label: '最后登录', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="lastLogin">${user.lastLogin || '今日 01:22:56'}</td>` },
+        { id: 'offlineDays', group: '日期信息', label: '离开天数', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="offlineDays">${user.offlineDays !== undefined ? user.offlineDays : 0}天</td>` },
+        { id: 'ip', group: '日期信息', label: '当前登录IP', checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="ip"><div class="ip-row" style="display: flex; align-items: center; gap: 4px;">${hasPerm(17) ? renderDataState(user.ip || '54.150.111.152', 'ip') : window.maskIp(user.ip)}</div></td>` },
+        { id: 'regIp', group: '日期信息', label: '注册 IP', checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="regIp"><div class="ip-row" style="display: flex; align-items: center; gap: 4px;">${hasPerm(17) ? renderDataState(user.regIp || '54.150.111.152', 'ip') : window.maskIp(user.regIp)}</div></td>` },
+        { id: 'remark', group: '备注', label: '备注', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="remark">${user.remark}</td>` },
+        { id: 'followRemark', group: '备注', label: '回访备注', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="followRemark">${user.followRemark}</td>` },
         { id: 'action', group: '操作', label: '操作', render: (user) => {
             return `<td class="sticky-col-right" data-col="action" style="overflow:visible;text-align:center;vertical-align:middle;">
                 <div class="compact-action-container" style="display:inline-flex;align-items:center;justify-content:center;">
@@ -967,6 +997,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedLevelVal) {
             tags.push({ key: 'level', label: `層級: ${selectedLevelVal}`, type: 'single-custom', element: dropdownLevel, defaultValue: '', defaultText: '全部', valueVarSetter: (v) => selectedLevelVal = v });
         }
+        if (typeof selectedDeviceTypeVal !== 'undefined' && selectedDeviceTypeVal) {
+            tags.push({ key: 'deviceType', label: `設備類型: ${selectedDeviceTypeVal}`, type: 'single-custom', element: dropdownDeviceType, defaultValue: '', defaultText: '全部設備類型', valueVarSetter: (v) => selectedDeviceTypeVal = v });
+        }
+        if (typeof selectedCountryVal !== 'undefined' && selectedCountryVal) {
+            tags.push({ key: 'country', label: `國家: ${selectedCountryVal}`, type: 'single-custom', element: dropdownCountry, defaultValue: '', defaultText: '請選擇國家', valueVarSetter: (v) => selectedCountryVal = v });
+        }
         // 3. VIP (Multiple Select)
         const selectedVips = getMultiSelectValues(dropdownVip);
         if (selectedVips.length > 0) {
@@ -1104,6 +1140,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: 'inputs',
                 elements: [inputDateStartOuter, inputDateEndOuter] 
             });
+        }
+        const inputPromoterAccount = document.getElementById('inputPromoterAccount');
+        if (inputPromoterAccount && inputPromoterAccount.value.trim()) {
+            tags.push({ key: 'promoterAccount', label: `推廣人帳號: ${inputPromoterAccount.value.trim()}`, type: 'input', element: inputPromoterAccount });
         }
         if (inputBankCardOuter && inputBankCardOuter.value.trim()) {
             tags.push({ key: 'bankCardOuter', label: `綁定銀行卡: ${inputBankCardOuter.value.trim()}`, type: 'input', element: inputBankCardOuter });
@@ -2145,7 +2185,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (nestedColumnVisibility['online']) {
                     nestedRowHtml += `<td style="text-align: center;">
-                        <span class="user-custom-tag ${user.offlineDays === 0 ? 'tag-yellow' : 'tag-grey'}">${user.offlineDays === 0 ? '在線' : '離線'}</span>
+                        <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                            <a href="#" class="op-link">停用</a>
+                            <span style="color: #10b981; font-size: 12px;">在线</span>
+                            <a href="#" class="op-link">踢下线</a>
+                        </div>
                     </td>`;
                 }
                 if (nestedColumnVisibility['avatar']) {
@@ -2157,131 +2201,115 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (nestedColumnVisibility['memberInfo']) {
                     nestedRowHtml += `<td class="nested-cell-info">
-                        <div><span class="info-label">用戶ID :</span> ${renderDataState(user.uid, 'copyable')}</div>
-                        <div><span class="info-label">會員名 :</span> <a href="#" class="user-detail-link" data-uid="${user.uid}">${renderDataState(user.account, 'copyable')}</a></div>
-                        <div><span class="info-label">真實姓名 :</span> ${hasPerm(37) ? renderDataState(user.realName) : window.maskRealName(user.realName)}</div>
-                        <div><span class="info-label">用戶暱稱 :</span> ${(user.nickname && user.nickname !== '-') ? user.nickname : renderDataState(user.account)}</div>
-                        <div><span class="info-label">代理 :</span> ${renderDataState(user.agentId)}</div>
-                        <div><span class="info-label">邀請人 :</span> ${renderDataState(user.inviter)}</div>
-                        <div><span class="info-label">註冊模式 :</span> ${user.registerMode || '一般註冊'}</div>
-                        <div><span class="info-label">手機號 :</span> ${getPhoneStatusHtml(user.phone)}</div>
+                        <div><span class="info-label">会员ID :</span> ${renderDataState(user.uid, 'copyable')}</div>
+                        <div><span class="info-label">会员名 :</span> <a href="#" class="user-detail-link" data-uid="${user.uid}">${renderDataState(user.account, 'copyable')}</a></div>
+                        <div><span class="info-label">真实姓名 :</span> ${hasPerm(37) ? renderDataState(user.realName) : window.maskRealName(user.realName)}</div>
+                        <div><span class="info-label">昵称 :</span> ${(user.nickname && user.nickname !== '-') ? user.nickname : renderDataState(user.account)}</div>
+                        <div><span class="info-label">上级代理 :</span> ${renderDataState(user.agentId)}</div>
+                        <div><span class="info-label">信用值 :</span> ${hasPerm(7) ? (user.creditValue || 0) : '***'}</div>
+                        <div><span class="info-label">邀请码 :</span> ${user.inviteCode || ''}</div>
+                        <div><span class="info-label">设备类型 :</span> ${user.deviceType || ''}</div>
+                        <div><span class="info-label">用户币别 :</span> <span style="color: #ef4444;">${user.currency || 'BRL'}</span></div>
+                        <div><span class="info-label">国家 :</span> <span style="color: #ef4444;">${user.country || '巴西'}</span></div>
                     </td>`;
                 }
                 if (nestedColumnVisibility['levelTeam']) {
                     nestedRowHtml += `<td class="nested-cell-info">
-                        <div><span class="info-label">支付層級 :</span> ${hasPerm(4) ? (user.payLevel || '默認層') : '***'}</div>
-                        <div><span class="info-label">成長值 :</span> ${user.growth || 0}</div>
-                        <div><span class="info-label">等級 :</span> <strong class="${user.level === '黃金會員' ? 'level-gold' : ''}">${user.level}</strong></div>
-                        <div><span class="info-label">帳號類型 :</span> ${user.accountType || '普通帳號'}</div>
-                        <div><span class="info-label">會員類型 :</span> ${user.userType || '代理會員'}</div>
-                        <div><span class="info-label">邀請碼 :</span> ${user.inviteCode || '-'}</div>
-                        <div><span class="info-label">直屬下級/團隊人數 :</span> <a href="#" class="subordinate-link" style="color: var(--primary-color); text-decoration: underline;" data-uid="${user.uid}">${hasPerm(6) ? (user.directTeam || '0/0') : '*/*'}</a></div>
-                        <div><span class="info-label">VIP會員等級 :</span> ${user.vipLevel || 0}</div>
-                        <div><span class="info-label">VIP成長值 :</span> ${user.vipGrowth || 0}</div>
+                        <div><span class="info-label">会员层级 :</span> ${user.level || '默认层'}</div>
+                        <div><span class="info-label">成长值 :</span> ${user.growth || 0}</div>
+                        <div><span class="info-label">等级 :</span> VIP${user.vipLevel || 0}</div>
+                        <div><span class="info-label">账号类型 :</span> ${user.accountType || '普通账号'}</div>
+                        <div><span class="info-label">直属会员/团队数 :</span> <a href="#" class="subordinate-link" style="color: var(--primary-color); text-decoration: underline;" data-uid="${user.uid}">${hasPerm(6) ? (user.directTeam || '0/0') : '*/*'}</a></div>
                     </td>`;
                 }
                 if (nestedColumnVisibility['creditLimit']) {
                     nestedRowHtml += `<td class="nested-cell-info">
-                        <div><span class="info-label">信用值 :</span> ${hasPerm(7) ? (user.creditValue || 0) : '***'}</div>
-                        <div><span class="info-label">可用額度 :</span> ${user.availableCredit || 0}</div>
-                        <div><span class="info-label">佣金餘額 :</span> ${hasPerm(7) ? (user.commissionBal || 0) : '***'}</div>
-                        <div><span class="info-label">診額寶 :</span> ${user.balanceBuy || 0}</div>
-                        <div><span class="info-label">欠款 :</span> ${hasPerm(7) ? (user.arrears || '-') : '***'}</div>
-                        <div><span class="info-label">餘額寶利息 :</span> ${user.interest || 0}</div>
-                        <div><span class="info-label">三方餘額 :</span> ${user.thirdBal || 0} <a href="#" class="refresh-link" style="color:#2563eb;font-size:12px;margin-left:4px;text-decoration:none;">刷新</a></div>
-                        <div><span class="info-label">會員積分 :</span> ${user.points || 0}</div>
+                        <div><span class="info-label">余额 :</span> ${user.availableCredit || '59,711.53'}</div>
+                        <div><span class="info-label">余额宝 :</span> ${user.balanceBuy || '0.00'}</div>
+                        <div><span class="info-label">佣金余额 :</span> ${hasPerm(7) ? (user.commissionBal || '0.00') : '***'}</div>
+                        <div><span class="info-label">余额宝利息 :</span> ${user.interest || '0.00'}</div>
+                        <div><span class="info-label">三方余额 :</span> ${user.thirdBal || '0.00'} <a href="#" class="refresh-link" style="color:#2563eb;font-size:12px;margin-left:4px;text-decoration:none;">刷新</a></div>
+                        <div><span class="info-label">会员积分 :</span> ${user.points || '0.00'}</div>
                     </td>`;
                 }
                 if (nestedColumnVisibility['depositWithdraw'] && hasPerm(7)) {
                     nestedRowHtml += `<td class="nested-cell-info">
-                        <div><span class="info-label">存款總額 :</span> ${user.deposit || 0}</div>
-                        <div><span class="info-label">取款總額 :</span> ${user.withdraw || 0}</div>
-                        <div><span class="info-label">提款預扣金額 :</span> ${user.withdrawPre || '-'}</div>
-                        <div><span class="info-label">后台扣款總額 :</span> ${user.adminDeduct || '-'}</div>
-                        <div><span class="info-label">存款次數 :</span> ${user.depositCount || 0}</div>
-                        <div><span class="info-label">取款次數 :</span> ${user.withdrawCount || 0}</div>
+                        <div><span class="info-label">存款总额 :</span> ${user.deposit || '0.00'}</div>
+                        <div><span class="info-label">提款总额 :</span> ${user.withdraw || '0.00'}</div>
+                        <div><span class="info-label">存款次数 :</span> ${user.depositCount || 0}</div>
+                        <div><span class="info-label">提款次数 :</span> ${user.withdrawCount || 0}</div>
+                        <div><span class="info-label">后台加款总额 :</span> ${user.adminAdd || '50,000.00'}</div>
+                        <div><span class="info-label">后台扣款总额 :</span> ${user.adminDeduct || '0.00'}</div>
+                        <div><span class="info-label">后台活动加款总额 :</span> ${user.adminActivityAdd || '0.00'}</div>
+                        <div><span class="info-label">后台加款次数 :</span> ${user.adminAddCount || 1}</div>
+                        <div><span class="info-label">后台扣款次数 :</span> ${user.adminDeductCount || 0}</div>
+                        <div><span class="info-label">后台活动加款次数 :</span> ${user.adminActivityAddCount || 0}</div>
+                        <div><span class="info-label">免提直充充值总额 :</span> ${user.quickDeposit || '0.00'}</div>
+                        <div><span class="info-label">免提直充充值次数 :</span> ${user.quickDepositCount || 0}</div>
+                        <div><span class="info-label">免提直充提款总额 :</span> ${user.quickWithdraw || '0.00'}</div>
+                        <div><span class="info-label">免提直充提款次数 :</span> ${user.quickWithdrawCount || 0}</div>
                     </td>`;
                 }
                 if (nestedColumnVisibility['tags']) {
-                    const tagStyles = { '正常': 'tag-blue', 'VIP 客戶': 'tag-blue', 'VIP': 'tag-blue', '活躍': 'tag-green', '高頻交易': 'tag-green', '大戶': 'tag-purple', '高消費': 'tag-purple', '異常風險': 'tag-red' };
-                    
-                    let currentTags = user.tags;
-                    let nestedTagsOutput = currentTags.map(tag => {
-                        let styleClass = tagStyles[tag] || 'tag-grey';
-                        if (tag === '異常風險') {
-                            return `<span class="user-custom-tag ${styleClass}"><i class="ph-fill ph-warning-circle" style="margin-right: 4px; font-size: 13px;"></i>${tag}</span>`;
-                        }
-                        return `<span class="user-custom-tag ${styleClass}">${tag}</span>`;
-                    }).join('');
-                    
                     nestedRowHtml += `<td>
                         <div class="user-tags-container" style="flex-wrap: wrap;">
-                            ${nestedTagsOutput}
                         </div>
                     </td>`;
                 }
                 if (nestedColumnVisibility['status']) {
                     nestedRowHtml += `<td>
-                        <span class="user-custom-tag ${user.status === '正常' ? 'tag-blue' : user.status === '冻结' ? 'tag-blue' : 'tag-red'}">${user.status}</span>
+                        <span class="user-custom-tag tag-green">正常</span>
                     </td>`;
                 }
                 if (nestedColumnVisibility['dateInfo']) {
                     nestedRowHtml += `<td class="nested-cell-info">
-                        <div><span class="info-label">新增時間 :</span> ${renderDataState(user.date)}</div>
-                        <div><span class="info-label">最後登錄 :</span> ${renderDataState(user.lastLogin)}</div>
-                        <div><span class="info-label">離開天數 :</span> ${user.offlineDays}天</div>
-                        <div><span class="info-label">登錄IP :</span></div>
-                        <div class="ip-row" style="display: flex; align-items: center; gap: 4px;">
-                            ${hasPerm(17) ? renderDataState(user.ip, 'ip') : window.maskIp(user.ip)}
-                        </div>
+                        <div><span class="info-label">新增时间 :</span> ${renderDataState(user.date || '28-08-18 01:17')}</div>
+                        <div><span class="info-label">最后登录 :</span> ${renderDataState(user.lastLogin || '今日 01:22:56')}</div>
+                        <div><span class="info-label">离开天数 :</span> ${user.offlineDays !== undefined ? user.offlineDays : 0}天</div>
+                        <div><span class="info-label">当前登录IP :</span> ${hasPerm(17) ? renderDataState(user.ip || '54.150.111.152', 'ip') : window.maskIp(user.ip)}</div>
+                        <div><span class="info-label">上次登录IP :</span> </div>
+                        <div><span class="info-label">注册 IP :</span> ${hasPerm(17) ? renderDataState(user.regIp || '54.150.111.152', 'ip') : window.maskIp(user.regIp)}</div>
                     </td>`;
                 }
                 if (nestedColumnVisibility['remark'] && hasPerm(21)) {
                     nestedRowHtml += `<td class="nested-cell-info">
-                        <div><span class="info-label">備註 :</span> ${renderDataState(user.remark, 'longText')}</div>
-                        <div><span class="info-label">回訪備註 :</span> ${renderDataState(user.followRemark, 'longText')}</div>
-                        <div><span class="info-label">注 :</span> ${renderDataState(user.note, 'longText')}</div>
+                        <div><span class="info-label">备注 :</span> ${renderDataState(user.remark, 'longText')}</div>
+                        <div><span class="info-label">回访备注 :</span> ${renderDataState(user.followRemark, 'longText')}</div>
                     </td>`;
                 }
 
-                const gridOps = [
-                        shouldShowOp("編輯用戶") ? `<a href="#" class="op-link user-detail-link" data-uid="${user.uid}">編輯用戶</a>` : '',
-                        shouldShowOp("查看詳情") ? `<a href="#" class="op-link user-detail-link" data-uid="${user.uid}">查看詳情</a>` : '',
-                        shouldShowOp("額度修改") ? `<a href="#" class="op-link">額度修改</a>` : '',
-                        shouldShowOp("資金明細") ? `<a href="#" class="op-link">資金明細</a>` : '',
-                        shouldShowOp("注單明細") ? `<a href="#" class="op-link">注單明細</a>` : '',
-                        shouldShowOp("修改密碼") ? `<a href="#" class="op-link">修改密碼</a>` : '',
-                        shouldShowOp("下級會員") ? `<a href="#" class="op-link">下級會員</a>` : '',
-                        shouldShowOp("下級報表") ? `<a href="#" class="op-link">下級報表</a>` : '',
-                        shouldShowOp("下級注單") ? `<a href="#" class="op-link">下級注單</a>` : ''
-                    ].filter(Boolean);
+                const opLinks = [];
+                if (shouldShowOp("编辑用户")) opLinks.push(`<a href="#" class="op-link user-detail-link" data-uid="${user.uid}">编辑用户</a>`);
+                if (shouldShowOp("详情")) opLinks.push(`<a href="#" class="op-link user-detail-link" data-uid="${user.uid}">详情</a>`);
+                if (shouldShowOp("资金明细")) opLinks.push(`<a href="#" class="op-link">资金明细</a>`);
+                if (shouldShowOp("注单明细")) opLinks.push(`<a href="#" class="op-link">注单明细</a>`);
+                if (shouldShowOp("体育返水")) opLinks.push(`<a href="#" class="op-link">体育返水</a>`);
+                
+                nestedRowHtml += `<td style="text-align: right; padding: 12px 16px; width: 1%; white-space: nowrap; vertical-align: middle;">`;
+                
+                if (opLinks.length > 0) {
+                    nestedRowHtml += `<div style="display: flex; flex-wrap: wrap; gap: 8px 12px; justify-content: flex-end; max-width: 160px; text-align: right; margin-left: auto;">
+                        ${opLinks.join('')}
+                    </div>`;
+                }
+                
+                const moreOps = [
+                    '编辑提款信息', '修改余额', '积分调整', '变更代理', '第三方游戏',
+                    '稽核记录', '备注', '回访备注', '隐藏资金明细', '校验用户任务',
+                    '链上地址', '额度修改(链上充值)', '编辑标签', '用户标签编辑记录'
+                ].filter(shouldShowOp);
 
-                    nestedRowHtml += `<td style="text-align: center; padding: 12px 16px; width: 1%; white-space: nowrap; vertical-align: middle;">`;
-                    
-                    if (gridOps.length > 0) {
-                        nestedRowHtml += `<div class="operations-grid-3x3">
-                            ${gridOps.join('')}
-                        </div>`;
-                    }
-                    
-                    const moreOps = [
-                        '交易設定', '赔率设置', '积分修改', '代理变更', '第三方游戏',
-                        '稽核记录', '代理变更记录', '回访备注', '隐藏资金明细', '快速登录变更',
-                        '校验用户任务', '谷歌验证码', '链上地址', '额度修改(链上充值)', '编辑标签',
-                        '用户标签编辑记录'
-                    ].filter(shouldShowOp);
-
-                    if (moreOps.length > 0) {
-                        nestedRowHtml += `
-                        <div class="more-op-dropdown-container">
-                            <button class="btn-more-op-wide">更多...</button>
-                            <ul class="more-op-dropdown-menu">
-                                ${moreOps.map(op => `<li>${op}</li>`).join('')}
-                            </ul>
-                        </div>`;
-                    }
-                    
-                    nestedRowHtml += `</td>`;
+                if (moreOps.length > 0) {
+                    nestedRowHtml += `
+                    <div class="more-op-dropdown-container" style="margin-top: 8px; text-align: right;">
+                        <button class="btn-more-op-wide" style="display: inline-block;">更多...</button>
+                        <ul class="more-op-dropdown-menu">
+                            ${moreOps.map(op => `<li>${op}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                }
+                
+                nestedRowHtml += `</td>`;
                 tr.innerHTML = nestedRowHtml;
             } else {
                 // Compact Mode Layout
@@ -3431,6 +3459,54 @@ document.querySelectorAll('input[type="datetime-local"], input[type="date"]').fo
         }
     });
 });
+
+    // Toggle amount masking in bottom stats bar
+    const amountToggles = document.querySelectorAll('.amount-toggle-wrapper');
+    amountToggles.forEach(wrapper => {
+        const btn = wrapper.querySelector('.amount-toggle-btn');
+        const display = wrapper.querySelector('.amount-display');
+        const rawValue = wrapper.getAttribute('data-raw-value');
+        
+        if (btn && display && rawValue) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isMasked = display.textContent === '********';
+                if (isMasked) {
+                    display.textContent = rawValue;
+                    btn.classList.remove('ph-eye-slash');
+                    btn.classList.add('ph-eye');
+                } else {
+                    display.textContent = '********';
+                    btn.classList.remove('ph-eye');
+                    btn.classList.add('ph-eye-slash');
+                }
+            });
+        }
+    });
+
+    // Toggle Decryption Details Submenu
+    const toggleDecryptionDetailsBtn = document.getElementById('toggleDecryptionDetailsBtn');
+    const decryptionDetailsIcon = document.getElementById('decryptionDetailsIcon');
+    const decryptionDetailsChildren = document.getElementById('decryptionDetailsChildren');
+
+    if (toggleDecryptionDetailsBtn && decryptionDetailsIcon && decryptionDetailsChildren) {
+        toggleDecryptionDetailsBtn.addEventListener('click', (e) => {
+            // Ignore if clicking directly on the checkbox
+            if (e.target.tagName.toLowerCase() === 'input') return;
+
+            e.stopPropagation();
+            const isExpanded = decryptionDetailsChildren.style.display !== 'none';
+            if (isExpanded) {
+                decryptionDetailsChildren.style.display = 'none';
+                decryptionDetailsIcon.classList.remove('ph-caret-down');
+                decryptionDetailsIcon.classList.add('ph-caret-right');
+            } else {
+                decryptionDetailsChildren.style.display = 'block';
+                decryptionDetailsIcon.classList.remove('ph-caret-right');
+                decryptionDetailsIcon.classList.add('ph-caret-down');
+            }
+        });
+    }
 
 window.renderTable = renderTable;
 window.renderCompactActionMenu = renderCompactActionMenu;

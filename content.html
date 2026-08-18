@@ -29,28 +29,19 @@
                 </div>
                 <div class="toolbar-right">
                     <button class="btn btn-primary" id="btnAddMember">新增會員</button>
-                    <button class="btn btn-outline">資料驗證</button>
                     <!-- 批量操作下拉選單 -->
                     <div class="batch-dropdown-container">
                         <button class="btn btn-outline" id="btnBatchOperations">批量操作 <i
                                 class="ph ph-caret-down"></i></button>
                         <ul class="batch-dropdown-menu" id="batchOperationsMenu">
                             <li id="batchItem-12">更新用戶餘額</li>
-                            <li id="batchItem-14">更新用戶</li>
-                            <li id="batchItem-24">更新用戶狀態</li>
-                            <li id="batchItem-43">代理變更</li>
-                            <li id="batchItem-44">更新最大提款次數</li>
+                            <li id="batchItem-14">用戶資訊</li>
                         </ul>
                     </div>
                     <div class="topbar-divider"></div>
-                    <!-- 導出數據下拉選單 -->
+                    <!-- 導出數據 -->
                     <div class="export-dropdown-container">
-                        <button class="btn btn-outline" id="btnExportData">導出數據 <i
-                                class="ph ph-caret-down"></i></button>
-                        <ul class="export-dropdown-menu" id="exportDataMenu">
-                            <li>已篩選用戶</li>
-                            <li>用戶數據</li>
-                        </ul>
+                        <button class="btn btn-outline" id="btnExportData">導出數據</button>
                     </div>
                 </div>
             </div>
@@ -63,38 +54,37 @@
                     <div class="form-group" data-filter-id="status">
                         <div class="custom-select-single" id="dropdownStatus">
                             <div class="select-selected">
-                                <span class="inline-label">狀態：</span>
-                                <span class="selected-val">正常</span>
+                                <span class="selected-val">全部狀態</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="" class="active">所有</li>
+                                <li data-value="" class="active">全部狀態</li>
                                 <li data-value="正常">正常</li>
                                 <li data-value="冻结">冻结</li>
                                 <li data-value="停用">停用</li>
                             </ul>
                         </div>
                     </div>
+                    
                     <div class="form-group" data-filter-id="level">
                         <div class="custom-select-single" id="dropdownLevel">
                             <div class="select-selected">
-                                <span class="inline-label">用戶層級：</span>
-                                <span class="selected-val">默認層</span>
+                                <span class="selected-val">所有用戶層級</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="" class="active">全部</li>
+                                <li data-value="" class="active">所有用戶層級</li>
                                 <li data-value="普通會員">普通會員</li>
                                 <li data-value="VIP會員">VIP會員</li>
                                 <li data-value="黃金會員">黃金會員</li>
                             </ul>
                         </div>
                     </div>
+                    
                     <div class="form-group" data-filter-id="vip">
                         <div class="custom-select-multi" id="dropdownVip">
                             <div class="select-selected">
-                                <span class="inline-label">會員等級：</span>
-                                <span class="selected-val">請選擇</span>
+                                <span class="selected-val">請選擇用戶等級</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
@@ -108,6 +98,7 @@
                             </ul>
                         </div>
                     </div>
+
                     <div class="form-group" data-filter-id="other">
                         <div class="custom-select-multi" id="dropdownOther">
                             <div class="select-selected">
@@ -124,10 +115,50 @@
                         </div>
                     </div>
 
+                    <div class="form-group" data-filter-id="deviceType">
+                        <div class="custom-select-single" id="dropdownDeviceType">
+                            <div class="select-selected">
+                                <span class="selected-val">設備類型</span>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            <ul class="select-options">
+                                <li data-value="" class="active">全部設備類型</li>
+                                <li data-value="PC">PC</li>
+                                <li data-value="H5">H5</li>
+                                <li data-value="Android">Android</li>
+                                <li data-value="IOS">IOS</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-filter-id="country">
+                        <div class="custom-select-single" id="dropdownCountry">
+                            <div class="select-selected">
+                                <span class="selected-val">請選擇國家</span>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            <ul class="select-options">
+                                <li data-value="" class="active">所有國家</li>
+                                <li data-value="菲律賓">菲律賓</li>
+                                <li data-value="亚洲">亚洲</li>
+                                <li data-value="日本">日本</li>
+                                <li data-value="越南">越南</li>
+                                <li data-value="印尼">印尼</li>
+                                <li data-value="泰国">泰国</li>
+                                <li data-value="韩国">韩国</li>
+                                <li data-value="美國">美國</li>
+                                <li data-value="巴西">巴西</li>
+                                <li data-value="马来西亚">马来西亚</li>
+                                <li data-value="孟加拉">孟加拉</li>
+                                <li data-value="香港">香港</li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <div class="form-group" data-filter-id="tagsSearch">
                         <div class="custom-select-multi" id="dropdownTagsSearch">
                             <div class="select-selected">
-                                <span class="inline-label">標籤搜尋：</span>
+                                <span class="inline-label">標籤：</span>
                                 <span class="selected-val" style="color: #94a3b8;">請選擇或輸入標籤...</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
@@ -144,86 +175,30 @@
                         </div>
                     </div>
 
-                    <!-- 新增隱藏的過濾欄位 (自訂篩選觸發) -->
-                    <div class="form-group" data-filter-id="birthday">
-                        <div class="custom-select-single" id="dropdownBirthdayOuter">
-                            <div class="select-selected">
-                                <span class="inline-label">生日月份：</span>
-                                <span class="selected-val">全部</span>
-                                <i class="ph ph-caret-down"></i>
-                            </div>
-                            <ul class="select-options">
-                                <li data-value="" class="active">全部</li>
-                                <li data-value="1">1月</li>
-                                <li data-value="2">2月</li>
-                                <li data-value="3">3月</li>
-                                <li data-value="4">4月</li>
-                                <li data-value="5">5月</li>
-                                <li data-value="6">6月</li>
-                                <li data-value="7">7月</li>
-                                <li data-value="8">8月</li>
-                                <li data-value="9">9月</li>
-                                <li data-value="10">10月</li>
-                                <li data-value="11">11月</li>
-                                <li data-value="12">12月</li>
-                            </ul>
+                    <div class="form-group" data-filter-id="promoterAccount">
+                        <div class="input-with-inline-label">
+                            <span class="inline-label">推廣人帳號：</span>
+                            <input type="text" placeholder="輸入推廣人帳號" id="inputPromoterAccount">
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-filter-id="notLoginDays">
+                        <div class="input-with-inline-label">
+                            <span class="inline-label">未登錄天數：</span>
+                            <input type="text" placeholder="天數" id="inputOfflineDaysOuter">
                         </div>
                     </div>
 
                     <div class="form-group" data-filter-id="registerTime">
                         <div class="date-range-container">
-                            <span class="inline-label">新增時間：</span>
-                            <input type="datetime-local" class="date-text" id="inputDateStartOuter"
+                            <span class="inline-label">註冊時間：</span>
+                            <input type="date" class="date-text" id="inputDateStartOuter"
                                 style="border:none; outline:none; background:transparent;">
                             <span class="date-separator-line">~</span>
-                            <input type="datetime-local" class="date-text" id="inputDateEndOuter"
+                            <input type="date" class="date-text" id="inputDateEndOuter"
                                 style="border:none; outline:none; background:transparent;">
                         </div>
                     </div>
-
-                    <div class="form-group" data-filter-id="bankCard">
-                        <div class="input-with-inline-label">
-                            <span class="inline-label">綁定銀行卡：</span>
-                            <input type="text" placeholder="銀行卡號" id="inputBankCardOuter">
-                        </div>
-                    </div>
-
-                    <div class="form-group" data-filter-id="notLoginDays">
-                        <div class="input-with-suffix">
-                            <span class="inline-label">未登入天數 (大於)：</span>
-                            <input type="text" placeholder="天數" id="inputOfflineDaysOuter">
-                            <span class="suffix">天</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group" data-filter-id="agentId">
-                        <div class="input-with-inline-label">
-                            <span class="inline-label">代理Id：</span>
-                            <input type="text" placeholder="代理Id" id="inputAgentIdOuter">
-                        </div>
-                    </div>
-
-                    <div class="form-group" data-filter-id="vipLevel">
-                        <div class="input-with-inline-label">
-                            <span class="inline-label">VIP會員等級：</span>
-                            <input type="text" placeholder="VIP會員等級" id="inputVipLevelOuter">
-                        </div>
-                    </div>
-
-                    <div class="form-group" data-filter-id="loginIp">
-                        <div class="input-with-inline-label">
-                            <span class="inline-label">登录IP：</span>
-                            <input type="text" placeholder="登录IP" id="inputIpOuter">
-                        </div>
-                    </div>
-
-                    <div class="form-group" data-filter-id="depositAmount">
-                        <div class="input-with-inline-label">
-                            <span class="inline-label">存款金額大於：</span>
-                            <input type="text" placeholder="金額" id="inputDepositOuter">
-                        </div>
-                    </div>
-
                 </div>
 
                 <div class="filter-actions-row">
@@ -234,29 +209,25 @@
                                     class="ph ph-caret-down"></i>
                             </div>
                             <ul class="dropdown-menu" id="accountTypeMenu" style="max-height: 250px; overflow-y: auto;">
-                                <li data-value="exact" class="active"><span>帳號 (精確匹配)</span> <span
-                                        class="type-badge">Exact</span></li>
-                                <li data-value="fuzzy"><span>帳號 (模糊匹配)</span> <span class="type-badge">Fuzzy</span>
-                                </li>
-                                <li data-value="multi"><span>帳號 (多帳號篩選)</span> <span class="type-badge">Multi</span>
-                                </li>
-                                <li data-value="quickLogin"><span>快速登录帐号</span> <span class="type-badge">Quick</span>
-                                </li>
-                                <li data-value="uid"><span>用户ID</span> <span class="type-badge">ID</span></li>
-                                <li data-value="inviteCode"><span>邀请码</span> <span class="type-badge">Code</span>
-                                </li>
-                                <li data-value="nickname"><span>用户昵称</span> <span class="type-badge">Nick</span>
-                                </li>
-                                <li data-value="realName"><span>真实姓名</span> <span class="type-badge">Name</span>
-                                </li>
+                                <li data-value="account" class="active"><span>账号</span> <span class="type-badge">Fuzzy</span></li>
+                                <li data-value="accountExact"><span>账号（精确匹配）</span> <span class="type-badge">Exact</span></li>
+                                <li data-value="uid"><span>会员ID</span> <span class="type-badge">ID</span></li>
+                                <li data-value="bankCard"><span>银行卡号(钱包地址)</span> <span class="type-badge">Card</span></li>
+                                <li data-value="cpf"><span>CPF</span> <span class="type-badge">CPF</span></li>
+                                <li data-value="nickname"><span>昵称</span> <span class="type-badge">Nick</span></li>
+                                <li data-value="realName"><span>真实姓名</span> <span class="type-badge">Name</span></li>
+                                <li data-value="inviteCode"><span>邀请码</span> <span class="type-badge">Code</span></li>
                                 <li data-value="email"><span>邮箱</span> <span class="type-badge">Email</span></li>
-                                <li data-value="zalo"><span>Zalo</span> <span class="type-badge">Zalo</span></li>
-                                <li data-value="whatsapp"><span>WhatsApp</span> <span class="type-badge">WA</span></li>
-                                <li data-value="telegram"><span>Telegram</span> <span class="type-badge">TG</span></li>
                                 <li data-value="phone"><span>手机号</span> <span class="type-badge">Phone</span></li>
-                                <li data-value="remark"><span>回访备注</span> <span class="type-badge">Note</span></li>
-                                <li data-value="googleCode"><span>谷歌验证码</span> <span class="type-badge">Google</span>
-                                </li>
+                                <li data-value="zalo"><span>zalo</span> <span class="type-badge">Zalo</span></li>
+                                <li data-value="facebook"><span>facebook</span> <span class="type-badge">FB</span></li>
+                                <li data-value="whatsapp"><span>whatsapp</span> <span class="type-badge">WA</span></li>
+                                <li data-value="telegram"><span>telegram</span> <span class="type-badge">TG</span></li>
+                                <li data-value="securityQuestion"><span>安全问题回答</span> <span class="type-badge">Sec</span></li>
+                                <li data-value="googleAuth"><span>谷歌帐号</span> <span class="type-badge">Google</span></li>
+                                <li data-value="registerIp"><span>注册 IP</span> <span class="type-badge">IP</span></li>
+                                <li data-value="currentIp"><span>当前登录IP</span> <span class="type-badge">IP</span></li>
+                                <li data-value="lastLoginIp"><span>上次登录IP</span> <span class="type-badge">IP</span></li>
                             </ul>
                         </div>
                         <input type="text" id="inputAccount" placeholder="請輸入精確帳號">
@@ -331,32 +302,33 @@
             </button>
             <div class="bottom-stats-left">
                 <div class="stat-item">
-                    <span class="stat-label">用戶餘額寶總額</span>
-                    <span class="stat-value"><strong>$ 15,057.43</strong> <span class="stat-unit">T</span></span>
+                    <span class="stat-label">用户总金额(不含测试用户)</span>
+                    <span class="stat-value amount-toggle-wrapper" data-raw-value="2,719,013,124,824.79">
+                        <strong class="amount-display">********</strong>
+                        <i class="ph ph-eye-slash amount-toggle-btn" style="cursor: pointer; margin-left: 4px; color: #6b7280; font-size: 16px; vertical-align: text-bottom;"></i>
+                    </span>
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
-                    <span class="stat-label">用戶總金額</span>
-                    <span class="stat-value"><strong>$ 20,417,771</strong></span>
+                    <span class="stat-label">三方游戏总余额(参考值)</span>
+                    <span class="stat-value amount-toggle-wrapper" data-raw-value="4,489,635.08">
+                        <strong class="amount-display">********</strong>
+                        <i class="ph ph-eye-slash amount-toggle-btn" style="cursor: pointer; margin-left: 4px; color: #6b7280; font-size: 16px; vertical-align: text-bottom;"></i>
+                    </span>
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
-                    <span class="stat-label">三方遊戲總餘額總額 <i class="ph ph-info" title="參考值"></i></span>
-                    <span class="stat-value"><strong>$ 620,847</strong></span>
+                    <span class="stat-label">当日注册</span>
+                    <span class="stat-value text-indigo"><strong>7</strong></span>
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
-                    <span class="stat-label">註冊</span>
-                    <span class="stat-value text-indigo"><strong>15</strong> <span class="stat-unit">人</span></span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-label">有效首充</span>
-                    <span class="stat-value text-emerald"><strong>1</strong> <span class="stat-unit">人</span></span>
+                    <span class="stat-label">当日注册有效用户(首充)</span>
+                    <span class="stat-value text-emerald"><strong>0</strong></span>
                 </div>
             </div>
             <div class="bottom-stats-right">
-                <span class="stats-exclude-badge">數據已排除測試帳號</span>
+
             </div>
         </div>
     </div>
@@ -538,55 +510,43 @@
                 <div class="checkbox-list">
                     <label class="checkbox-item">
                         <input type="checkbox" value="status" checked>
-                        <span>帳號狀態 (原類型分類)</span>
+                        <span>全部狀態</span>
                     </label>
                     <label class="checkbox-item">
                         <input type="checkbox" value="level" checked>
-                        <span>用戶層級</span>
+                        <span>所有用戶層級</span>
                     </label>
                     <label class="checkbox-item">
                         <input type="checkbox" value="vip" checked>
-                        <span>會員等級</span>
+                        <span>請選擇用戶等級</span>
                     </label>
                     <label class="checkbox-item">
                         <input type="checkbox" value="other" checked>
-                        <span>排除條件 (可複選)</span>
+                        <span>排除條件</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="deviceType" checked>
+                        <span>設備類型</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="country" checked>
+                        <span>請選擇國家</span>
                     </label>
                     <label class="checkbox-item">
                         <input type="checkbox" value="tagsSearch" checked>
-                        <span>標籤搜尋</span>
+                        <span>標籤</span>
                     </label>
                     <label class="checkbox-item">
-                        <input type="checkbox" value="birthday" checked>
-                        <span>生日月份</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" value="registerTime" checked>
-                        <span>新增時間範圍</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" value="bankCard" checked>
-                        <span>綁定銀行卡</span>
+                        <input type="checkbox" value="promoterAccount" checked>
+                        <span>推廣人帳號</span>
                     </label>
                     <label class="checkbox-item">
                         <input type="checkbox" value="notLoginDays" checked>
-                        <span>未登入天數 (大於)</span>
+                        <span>未登錄天數</span>
                     </label>
                     <label class="checkbox-item">
-                        <input type="checkbox" value="agentId" checked>
-                        <span>代理Id</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" value="vipLevel" checked>
-                        <span>VIP會員等級</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" value="loginIp" checked>
-                        <span>登录IP</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" value="depositAmount" checked>
-                        <span>存款金額大於</span>
+                        <input type="checkbox" value="registerTime" checked>
+                        <span>註冊時間</span>
                     </label>
                 </div>
             </div>
