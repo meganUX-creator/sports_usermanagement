@@ -291,10 +291,14 @@
 
             function updateStatsBarVisibility() {
                 if (iframe && iframe.contentWindow) {
-                    iframe.contentWindow.postMessage({
-                        type: 'stats_visibility',
-                        visible: statsCheckbox.checked
-                    }, '*');
+                    try {
+                        iframe.contentWindow.postMessage({
+                            type: 'stats_visibility',
+                            visible: statsCheckbox ? statsCheckbox.checked : true
+                        }, '*');
+                    } catch (e) {
+                        // ignore
+                    }
                 }
             }
 
@@ -318,11 +322,15 @@
 
                     // Use postMessage for cross-frame communication on file:// protocol
                     if (iframe && iframe.contentWindow) {
-                        iframe.contentWindow.postMessage({
-                            type: 'permission_change',
-                            traceId: traceNum,
-                            checked: e.target.checked
-                        }, '*');
+                        try {
+                            iframe.contentWindow.postMessage({
+                                type: 'permission_change',
+                                traceId: traceNum,
+                                checked: e.target.checked
+                            }, '*');
+                        } catch (err) {
+                            // ignore CORS error on file:// protocol
+                        }
                     }
                 });
             });

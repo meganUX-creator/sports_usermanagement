@@ -1,0 +1,54 @@
+欄位名稱,欄位ID,無資料狀態(代碼邏輯),數據為0狀態(代碼邏輯)
+用户ID,uid,顯示「-」,顯示「0」
+会员名,account,顯示「-」,顯示「0」
+在线,online,顯示灰色點,顯示綠色點 (若 offlineDays 為 0)
+状态,status,顯示空白/undefined,顯示「0」
+头像,avatar,報錯 (取 account 字首),顯示「0」
+真实姓名,realName,顯示「-」,顯示「0」
+昵称,nickname,顯示 account 備用 否則「-」,顯示「0」
+代理,agentId,顯示「-」,顯示「0」
+邀请人,inviter,顯示「-」,顯示「0」
+注册模式,registerMode,顯示「一般注册」(預設值),顯示「0」
+手机号,phone,顯示「未驗證」,顯示「已驗證」
+设备类型,deviceType,顯示空白,顯示「0」
+用户币别,currency,顯示「BRL」(預設值),顯示「0」
+国家,country,顯示「巴西」(預設值),顯示「0」
+支付层级,payLevel,顯示「默认层」(預設值),顯示「0」
+成长值,growth,顯示「0」,顯示「0」
+等级,level,顯示「默认层」(預設值),顯示「0」
+账号类型,accountType,顯示「普通账号」(預設值),顯示「0」
+会员类型,userType,顯示「代理会员」(預設值),顯示「0」
+邀请码,inviteCode,顯示空白,顯示「0」
+直属下级/团队数,directTeam,顯示「0/0」(預設值),顯示「0」
+VIP等级,vipLevel,顯示「0」,顯示「0」
+VIP成长值,vipGrowth,顯示「0」,顯示「0」
+信用值,creditValue,顯示「0」,顯示「0」
+可用额度,availableCredit,顯示「59,711.53」(預設值),顯示「0」
+佣金余额,commissionBal,顯示「0.00」,顯示「0.00」
+余额宝,balanceBuy,顯示「0.00」,顯示「0.00」
+欠款,arrears,顯示「0.00」,顯示「0.00」
+余额宝利息,interest,顯示「0.00」,顯示「0.00」
+三方余额,thirdBal,顯示「0.00」,顯示「0.00」
+会员积分,points,顯示「0.00」,顯示「0.00」
+存款总额,deposit,顯示「0.00」,顯示「0.00」
+提款总额,withdraw,顯示「0.00」,顯示「0.00」
+存款次数,depositCount,顯示「0」,顯示「0」
+提款次数,withdrawCount,顯示「0」,顯示「0」
+后台加款总额,adminAdd,顯示「50,000.00」(預設值),顯示「0」
+后台扣款总额,adminDeduct,顯示「0.00」,顯示「0.00」
+后台活动加款总额,adminActivityAdd,顯示「0.00」,顯示「0.00」
+后台加款次数,adminAddCount,顯示「1」(預設值),顯示「0」
+后台扣款次数,adminDeductCount,顯示「0」,顯示「0」
+后台活动加款次数,adminActivityAddCount,顯示「0」,顯示「0」
+免提直充充值总额,quickDeposit,顯示「0.00」,顯示「0.00」
+免提直充充值次数,quickDepositCount,顯示「0」,顯示「0」
+免提直充提款总额,quickWithdraw,顯示「0.00」,顯示「0.00」
+免提直充提款次数,quickWithdrawCount,顯示「0」,顯示「0」
+标签,tags,陣列報錯 (無 length 屬性),陣列報錯 (無 length 屬性)
+新增时间,date,顯示「28-08-18 01:17」(預設值),顯示「0」
+最后登录,lastLogin,顯示「今日 01:22:56」(預設值),顯示「0」
+离开天数,offlineDays,顯示「0天」,顯示「0天」
+当前登录IP,ip,顯示「54.150.111.152」(預設值),顯示「0」
+注册 IP,regIp,顯示「54.150.111.152」(預設值),顯示「0」
+备注,remark,顯示空白/undefined,顯示「0」
+回访备注,followRemark,顯示空白/undefined,顯示「0」

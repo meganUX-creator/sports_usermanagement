@@ -1,0 +1,109 @@
+diff --git a/content.html b/content.html
+index 134df46..fa97e53 100644
+--- a/content.html
++++ b/content.html
+@@ -468,24 +468,7 @@
+                         <label>未登入天數 (大於)</label>
+                         <div class="input-with-suffix">
+                             <input type="text" id="inputOfflineDays" placeholder="天數">
+-                            <span>天</span>
+-                        </div>
+-                    </div>
+-                    <div class="form-group">
+-                        <label>代理Id</label>
+-                        <input type="text" id="inputAgentId" value="" placeholder="代理Id">
+-                    </div>
+-                    <div class="form-group">
+-                        <label>VIP會員等級</label>
+-                        <input type="text" id="inputVipLevel" value="" placeholder="VIP會員等級">
+-                    </div>
+-                    <div class="form-group">
+-                        <label>登录IP</label>
+-                        <input type="text" id="inputIp" value="" placeholder="登录IP">
+-                    </div>
+-                    <div class="form-group">
+-                        <label>存款金額大於</label>
+-                        <input type="text" id="inputDeposit" value="" placeholder="金額">
++                            <span>天</span>holder="金額">
+                     </div>
+                 </div>
+             </div>近
+@@ -552,20 +535,19 @@
+             </div>
+             <div class="modal-footer">
+                 <button class="btn btn-outline" id="btnCustomizeFilterCancel">取消</button>
+-                <button class="btn btn-primary" id="btnCustomizeFilterConfirm">確認</button>
+-            </div>
+-        </div>
+-    </div>
+-
+-    <!-- 修改用戶詳情右側抽屜 (Edit User Details Drawer) -->
+-    <div class="user-edit-drawer" id="userEditDrawer">
+-        <div class="drawer-header"
+-            style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start; background: #ffffff;">
+-            <div style="display: flex; gap: 16px; align-items: center;">
+-                <div id="headerAvatar" class="icon-container indigo" style="width: 48px; height: 48px; font-size: 24px; border-radius: 12px; font-weight: bold; background-color: #6366f1; color: white;">U</div>
+-                <div>
+-                    <h3 style="margin:0 0 8px 0; font-size:20px; font-weight:600; color:var(--text-color);">修改用戶詳情 · <span id="headerAccount">test_user_1</span></h3>
+-                    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b;">
++                <button class="btn btn-primary" id="btnCustomizeFiltholder="代理Id">
++                    </div>
++                    <div class="form-group">
++                        <label>VIP會員等級</label>
++                        <input type="text" id="inputVipLevel" value="" placeholder="VIP會員等級">
++                    </div>
++                    <div class="form-group">
++                        <label>登录IP</label>
++                        <input type="text" id="inputIp" value="" placeholder="登录IP">
++                    </div>
++                    <div class="form-group">
++                        <label>存款金額大於</label>
++                        <input type="text" id="inputDeposit" value="" placee: 13px; color: #64748b;">
+                         <span id="headerUserType">代理會員</span> · <span id="headerUserLevel">VIP會員</span>
+                         <span id="headerStatusBadge" style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; background-color: #fee2e2; color: #dc2626; font-size: 12px; margin-left: 8px;"><div style="width: 6px; height: 6px; border-radius: 50%; background-color: #dc2626;"></div>目前狀態：停用</span>
+                     </div>
+@@ -689,7 +671,25 @@
+                             </div>
+                             <div class="edit-form-group">
+                                 <label>Google 登入</label>
+-                                <div style="height: 40px; border-radius: 8px; border: 1px dashed #cbd5e1; background-color: #f8fafc; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 14px;">尚未綁定</div>
++                                <div style="height: 40px; border-radius: 8px; border:erConfirm">確認</button>
++            </div>
++        </div>
++    </div>
++
++    <!-- 修改用戶詳情右側抽屜 (Edit User Details Drawer) -->
++    <div class="user-edit-drawer" id="userEditDrawer">
++        <div class="drawer-header"
++            style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start; background: #ffffff;">
++            <div style="display: flex; gap: 16px; align-items: center;">
++                <div id="headerAvatar" class="icon-container indigo" style="width: 48px; height: 48px; font-size: 24px; border-radius: 12px; font-weight: bold; background-color: #6366f1; color: white;">U</div>
++                <div>
++                    <h3 style="margin:0 0 8px 0; font-size:20px; font-weight:600; color:var(--text-color);">修改用戶詳情 · <span id="headerAccount">test_user_1</span></h3>
++                    <div style="display: flex; align-items: center; gap: 8px; font-siz
++                        </div>
++                    </div>
++                    <div class="form-group">
++                        <label>代理Id</label>
++                        <input type="text" id="inputAgentId" value="" place 1px dashed #cbd5e1; background-color: #f8fafc; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 14px;">尚未綁定</div>
+                             </div>
+                             <div class="edit-form-group">
+                                 <label>Telegram 登入</label>
+@@ -1004,13 +1004,13 @@
+                             <tbody>
+                                 <tr style="border-bottom: 1px solid var(--border-color);">
+                                     <td style="padding: 12px 8px; text-align: center;">megan002</td>
+-                                    <td style="padding: 12px 8px; text-align: center;"></td>
++                                    <td style="padding: 12px 8px; text-align: center;">無數據</td>
+                                     <td style="padding: 12px 8px; text-align: center;">2026-07-28 16:30:42</td>
+                                     <td style="padding: 12px 8px; text-align: center;"><span
+                                             class="badge badge-normal">正常</span></td>
+-                                    <td style="padding: 12px 8px; text-align: center;">0</td>
+-                                    <td style="padding: 12px 8px; text-align: center;">0</td>
+-                                    <td style="padding: 12px 8px; text-align: center;"></td>
++                                    <td style="padding: 12px 8px; text-align: center;">0.000</td>
++                                    <td style="padding: 12px 8px; text-align: center;">0.000</td>
++                                    <td style="padding: 12px 8px; text-align: center;">－</td>
+                                     <td style="padding: 12px 8px; text-align: center;">
+                                         <a href="#" style="color: var(--primary-color); margin-right: 8px;">查看下级</a>
+                                         <a href="#" style="color: var(--primary-color);">返回最上级</a>

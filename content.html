@@ -362,35 +362,211 @@
                 style="display: flex; gap: 24px; border-bottom: 1px solid var(--border-color); padding: 0 24px; background: #ffffff;">
                 <button type="button" class="user-edit-tab-item user-details-tab-item active" data-target="detailsBasic">會員信息</button>
                 <button type="button" id="detailsAuditTabBtn" class="user-edit-tab-item user-details-tab-item" data-target="detailsAudit" style="display: none;">會員審核</button>
-                <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsWithdraw">提現信息</button>
-                <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsLogin">設備與IP紀錄</button>
+                <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsWithdraw">提款信息</button>
+                <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsLogin">登入與註冊紀錄</button>
             </div>
 
             <div class="drawer-body user-details-form-body"
                 style="padding: 24px; overflow-y: auto; height: calc(100vh - 120px);">
+                
                 <!-- Tab 1: 會員信息 (Basic Info) -->
                 <div class="details-tab-content-panel active" id="detailsBasic">
-                    <!-- rendered via JS -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        
+                        <!-- Card 1: 基本資料 -->
+                        <div style="border: 1px solid var(--border-color); border-radius: 8px; background: #ffffff; padding: 24px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+                                <div style="width: 32px; height: 32px; background-color: #e0f2fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #0284c7; font-size: 16px;">
+                                    <i class="ph ph-user"></i>
+                                </div>
+                                <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #1e293b;">基本資料</h4>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">頭像:</span>
+                                    <div style="width: 48px; height: 48px; background: #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #94a3b8;">
+                                        <i class="ph ph-user" id="viewAvatarIcon"></i>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">暱稱:</span>
+                                    <span id="viewNickname" style="color: #475569; font-size: 14px; font-family: monospace;">-</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">帳號:</span>
+                                    <span id="viewAccount" style="color: #475569; font-size: 14px; font-family: monospace;">-</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">真實姓名:</span>
+                                    <span id="viewRealName" style="color: #475569; font-size: 14px;">-</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">生日:</span>
+                                    <span id="viewBirthday" style="color: #475569; font-size: 14px; font-family: monospace;">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: 聯絡與地址資訊 -->
+                        <div style="border: 1px solid var(--border-color); border-radius: 8px; background: #ffffff; padding: 24px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+                                <div style="width: 32px; height: 32px; background-color: #fce7f3; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #db2777; font-size: 16px;">
+                                    <i class="ph ph-map-pin"></i>
+                                </div>
+                                <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #1e293b;">聯絡與地址資訊</h4>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">電話國碼:</span><span id="viewPhoneCode" style="font-size: 14px; color: #475569; font-family: monospace;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">電話:</span><span id="viewPhone" style="font-size: 14px; color: #475569; font-family: monospace;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">信箱:</span><span id="viewEmail" style="font-size: 14px; color: #475569;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">用戶地址:</span><span id="viewAddress" style="font-size: 14px; color: #475569;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">省:</span><span id="viewProvince" style="font-size: 14px; color: #475569;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">城市:</span><span id="viewCity" style="font-size: 14px; color: #475569;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">郵遞區號:</span><span id="viewZipcode" style="font-size: 14px; color: #475569;">-</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: 社群與通訊軟體 -->
+                        <div style="border: 1px solid var(--border-color); border-radius: 8px; background: #ffffff; padding: 24px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+                                <div style="width: 32px; height: 32px; background-color: #dbeafe; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 16px;">
+                                    <i class="ph ph-chats"></i>
+                                </div>
+                                <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #1e293b;">社群與通訊軟體</h4>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">QQ:</span><span id="viewQQ" style="font-size: 14px; color: #475569; font-family: monospace;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">微信:</span><span id="viewWechat" style="font-size: 14px; color: #475569; font-family: monospace;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">Zalo:</span><span id="viewZalo" style="font-size: 14px; color: #475569; font-family: monospace;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">Facebook:</span><span id="viewFacebook" style="font-size: 14px; color: #475569;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">WhatsApp:</span><span id="viewWhatsapp" style="font-size: 14px; color: #475569; font-family: monospace;">-</span></div>
+                                <div style="display: flex; align-items: center;"><span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px;">Telegram:</span><span id="viewTelegram" style="font-size: 14px; color: #475569; font-family: monospace;">-</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: 備註資訊 -->
+                        <div style="border: 1px solid var(--border-color); border-radius: 8px; background: #ffffff; padding: 24px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+                                <div style="width: 32px; height: 32px; background-color: #fef3c7; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #d97706; font-size: 16px;">
+                                    <i class="ph ph-notebook"></i>
+                                </div>
+                                <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #1e293b;">備註資訊</h4>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                                <div style="display: flex; align-items: flex-start;">
+                                    <span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px; padding-top: 2px;">備註:</span>
+                                    <span id="viewRemark" style="color: #475569; font-size: 14px; line-height: 1.5; white-space: pre-wrap;">-</span>
+                                </div>
+                                <div style="display: flex; align-items: flex-start;">
+                                    <span style="font-weight: 600; color: #64748b; width: 100px; font-size: 14px; padding-top: 2px;">回訪備註:</span>
+                                    <span id="viewReturnRemark" style="color: #475569; font-size: 14px; line-height: 1.5; white-space: pre-wrap;">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tab 1.5: 會員審核 (Member Audit) -->
                 <div class="details-tab-content-panel" id="detailsAudit" style="display: none;">
                     <!-- rendered via JS -->
                 </div>
-                
+
+
                 <!-- Tab 2: 提現信息 (Withdraw Info) -->
                 <div class="details-tab-content-panel" id="detailsWithdraw" style="display: none;">
-                    <!-- rendered via JS -->
+                    <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #ffffff;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 14px;">
+                            <thead>
+                                <tr style="background-color: #f8fafc; color: var(--text-secondary); border-bottom: 1px solid var(--border-color);">
+                                    <th style="padding: 16px; font-weight: 600;">提款類型</th>
+                                    <th style="padding: 16px; font-weight: 600;">銀行卡號/虛擬幣地址/支付寶帳號</th>
+                                    <th style="padding: 16px; font-weight: 600;">開戶銀行</th>
+                                    <th style="padding: 16px; font-weight: 600;">分行地址</th>
+                                </tr>
+                            </thead>
+                            <tbody id="viewWithdrawTableBody">
+                                <!-- rendered via JS -->
+                            </tbody>
+                        </table>
+                        <div id="viewWithdrawEmpty" style="padding: 64px 0; text-align: center; color: #94a3b8; font-size: 14px;">暫無數據</div>
+                    </div>
                 </div>
 
-                <!-- Tab 3: 最後登錄 (Last Login) -->
+
+                <!-- Tab 3: 登入與註冊紀錄 (Login & Registration Records) -->
                 <div class="details-tab-content-panel" id="detailsLogin" style="display: none;">
-                    <!-- rendered via JS -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        
+                        <!-- Login IP Card -->
+                        <div style="border: 1px solid var(--border-color); border-radius: 8px; background: #ffffff; padding: 24px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+                                <div style="background: #dbeafe; color: #1d4ed8; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                                    <i class="ph ph-sign-in"></i>
+                                </div>
+                                <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #1e293b;">最後登入</h4>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px;">
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">IP</div>
+                                    <div id="viewLoginIp" style="font-size: 14px; font-family: monospace; display: flex; align-items: center; gap: 4px; color: #334155;">-</div>
+                                </div>
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">時間</div>
+                                    <div id="viewLoginTime" style="font-size: 14px; font-family: monospace; color: #334155;">-</div>
+                                </div>
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">設備號</div>
+                                    <div id="viewLoginDevice" style="font-size: 14px; font-family: monospace; color: #334155; word-break: break-all;">-</div>
+                                </div>
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">同IP登入人數</div>
+                                    <div><a href="#" id="viewLoginIpCount" onclick="openDetailedContentDrawer(event, 'ip')" style="color: #3b82f6; text-decoration: underline; font-weight: 600; font-size: 16px;">-</a></div>
+                                </div>
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">同設備登入人數</div>
+                                    <div><a href="#" id="viewLoginDeviceCount" onclick="openDetailedContentDrawer(event, 'device')" style="color: #3b82f6; text-decoration: underline; font-weight: 600; font-size: 16px;">-</a></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Registration IP Card -->
+                        <div style="border: 1px solid var(--border-color); border-radius: 8px; background: #ffffff; padding: 24px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+                                <div style="background: #dcfce7; color: #15803d; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                                    <i class="ph ph-user-plus"></i>
+                                </div>
+                                <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #1e293b;">註冊 IP</h4>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px;">
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">IP</div>
+                                    <div id="viewRegIp" style="font-size: 14px; font-family: monospace; display: flex; align-items: center; gap: 4px; color: #334155;">-</div>
+                                </div>
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">時間</div>
+                                    <div id="viewRegTime" style="font-size: 14px; font-family: monospace; color: #94a3b8;">-</div>
+                                </div>
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">設備號</div>
+                                    <div id="viewRegDevice" style="font-size: 14px; font-family: monospace; color: #334155; word-break: break-all;">-</div>
+                                </div>
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">同IP註冊人數</div>
+                                    <div><a href="#" id="viewRegIpCount" onclick="openDetailedContentDrawer(event, 'reg_ip')" style="color: #3b82f6; text-decoration: underline; font-weight: 600; font-size: 16px;">-</a></div>
+                                </div>
+                                <div>
+                                    <div style="color: #64748b; font-size: 13px; margin-bottom: 8px; font-weight: 500;">同設備註冊人數</div>
+                                    <div><a href="#" id="viewRegDeviceCount" onclick="openDetailedContentDrawer(event, 'reg_device')" style="color: #3b82f6; text-decoration: underline; font-weight: 600; font-size: 16px;">-</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tab 4: 註冊IP (Registration IP) (Removed, combined into detailsLogin) -->
-            </div>
-        </div>
+
+            </div> <!-- Closes drawer-body -->
+        </div> <!-- Closes Main Left Panel -->
         
         <!-- Expandable Right Panel -->
         <div id="detailsExpandPanel" style="width: 700px; min-width: 700px; border-left: 1px solid var(--border-color); background: #f8fafc; display: none; flex-direction: column;">
@@ -404,7 +580,7 @@
                 <!-- Table rendered via JS -->
             </div>
         </div>
-    </div>
+    </div> <!-- Closes userDetailsDrawer -->
     
     </main>
     </div>
@@ -592,43 +768,70 @@
             style="padding: 24px; overflow-y: auto; height: calc(100vh - 120px);">
             <!-- Tab 1: 基本信息 (Basic Info) -->
             
+            
             <div class="tab-content-panel active" id="tabContentBasic">
-                <form id="userEditForm" class="user-edit-form" style="display: flex; flex-direction: column;">
+                <form id="userEditFormBasic" class="user-edit-form" style="display: flex; flex-direction: column;">
                     
-                    <!-- Card 1: 帳戶概況 -->
+                    <!-- Card 1: 帳號與安全 -->
                     <div class="edit-card">
                         <div class="edit-card-header">
                             <div class="edit-card-title-wrap">
-                                <div class="icon-container indigo" style="background-color: #e0e7ff; color: #4f46e5;"><i class="ph ph-user"></i></div>
-                                <h4 class="edit-card-title">帳戶概況</h4>
+                                <div class="icon-container indigo" style="background-color: #e0e7ff; color: #4f46e5;"><i class="ph ph-shield-check"></i></div>
+                                <h4 class="edit-card-title">帳號與安全</h4>
                             </div>
-                            <span class="edit-card-subtitle">帳號 · 狀態 · 會員類型 · 等級</span>
                         </div>
                         <div class="edit-form-grid">
                             <div class="edit-form-group" style="grid-column: 1 / -1;">
-                                <label>帳號</label>
-                                <input type="text" class="form-input" id="editFormAccountInput" value="test_user_1" disabled style="background-color: #f8fafc; border-style: dashed; color: #475569; font-weight: 500;">
+                                <label>帳號 (唯讀)</label>
+                                <input type="text" class="form-input" id="editFormAccount" value="" disabled style="background-color: #f8fafc; border-style: dashed; color: #475569; font-weight: 500;">
                             </div>
                             <div class="edit-form-group">
-                                <label>會員類型</label>
+                                <label>狀態</label>
                                 <div class="radio-pill-group">
-                                    <label class="radio-pill"><input type="radio" name="editUserType" value="代理會員" checked><i class="ph ph-check-circle"></i><span>代理會員</span></label>
-                                    <label class="radio-pill"><input type="radio" name="editUserType" value="普通會員"><i class="ph ph-circle"></i><span>普通會員</span></label>
-                                </div>
-                            </div>
-                            <div class="edit-form-group">
-                                <label>帳戶狀態</label>
-                                <div class="radio-pill-group">
-                                    <label class="radio-pill"><input type="radio" name="editStatus" value="正常" checked><i class="ph ph-check-circle"></i><span>正常</span></label>
+                                    <label class="radio-pill color-orange"><input type="radio" name="editStatus" value="待審核"><i class="ph ph-circle"></i><span>待審核</span></label>
+                                    <label class="radio-pill"><input type="radio" name="editStatus" value="正常"><i class="ph ph-circle"></i><span>正常</span></label>
                                     <label class="radio-pill color-red"><input type="radio" name="editStatus" value="冻结"><i class="ph ph-circle"></i><span>冻结</span></label>
                                     <label class="radio-pill color-red"><input type="radio" name="editStatus" value="停用"><i class="ph ph-circle"></i><span>停用</span></label>
                                 </div>
                             </div>
-                            <div class="edit-form-group"><label>用戶暱稱</label><input type="text" id="editFormNickname" class="form-input"></div>
-                            <div class="edit-form-group"><label>真實姓名</label><input type="text" id="editFormRealName" class="form-input"></div>
-                            <div class="edit-form-group"><label>出生年月日</label><input type="date" id="editFormBirthday" class="form-input"></div>
+                            <div class="edit-form-group"><label>登錄密碼</label><input type="password" id="editFormLoginPwd" class="form-input" placeholder="不修改請留空"></div>
+                            <div class="edit-form-group"><label>提款密碼</label><input type="password" id="editFormWithdrawPwd" class="form-input" placeholder="不修改請留空"></div>
+                            
                             <div class="edit-form-group">
-                                <label>用戶等級</label>
+                                <label>今日密碼錯誤次數</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" id="editFormLoginPwdError" class="form-input" style="flex: 1;" value="0" disabled>
+                                    <button type="button" class="btn btn-outline btn-sm" id="btnClearLoginPwdError" style="padding: 0 16px;">清除</button>
+                                </div>
+                            </div>
+                            
+                            <div class="edit-form-group">
+                                <label>今日資金密碼錯誤數</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" id="editFormWithdrawPwdError" class="form-input" style="flex: 1;" value="0" disabled>
+                                    <button type="button" class="btn btn-outline btn-sm" id="btnClearWithdrawPwdError" style="padding: 0 16px;">清除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: 個人基本資料 -->
+                    <div class="edit-card">
+                        <div class="edit-card-header">
+                            <div class="edit-card-title-wrap">
+                                <div class="icon-container indigo" style="background-color: #e0f2fe; color: #0284c7;"><i class="ph ph-user"></i></div>
+                                <h4 class="edit-card-title">個人基本資料</h4>
+                            </div>
+                        </div>
+                        <div class="edit-form-grid">
+                            <div class="edit-form-group"><label>真實姓名</label><input type="text" id="editFormRealName" class="form-input"></div>
+                            <div class="edit-form-group">
+                                <label>生日 (YYYY-MM-DD)</label>
+                                <input type="date" id="editFormBirthday" class="form-input">
+                            </div>
+                            <div class="edit-form-group"><label>暱稱</label><input type="text" id="editFormNickname" class="form-input"></div>
+                            <div class="edit-form-group">
+                                <label>會員層級</label>
                                 <select id="editFormLevel" class="form-select">
                                     <option value="普通會員">普通會員</option>
                                     <option value="黃金會員">黃金會員</option>
@@ -636,70 +839,92 @@
                                     <option value="鑽石會員">鑽石會員</option>
                                 </select>
                             </div>
-                            <div class="edit-form-group">
-                                <label>支付層級</label>
-                                <select id="editFormPayLevel" class="form-select">
-                                    <option value="默認層">默認層</option>
-                                    <option value="VIP層">VIP層</option>
-                                </select>
-                            </div>
-                            <div class="edit-form-group"><label>國家</label><input type="text" id="editFormCountry" class="form-input" value="VN"></div>
-                            <div class="edit-form-group"><label>幣種</label><input type="text" id="editFormCurrency" class="form-input" value="VND"></div>
+                            <div class="edit-form-group"><label>CPF (巴西納稅人登記號)</label><input type="text" id="editFormCPF" class="form-input"></div>
                         </div>
                     </div>
 
-                    <!-- Card 2: 聯絡方式 -->
-                    <div class="edit-card" id="editContactInfoCard">
+                    <!-- Card 3: 聯絡與地址資訊 -->
+                    <div class="edit-card">
                         <div class="edit-card-header">
                             <div class="edit-card-title-wrap">
-                                <div class="icon-container indigo" style="background-color: #f5f3ff; color: #7c3aed;"><i class="ph ph-phone"></i></div>
-                                <h4 class="edit-card-title">聯絡方式</h4>
+                                <div class="icon-container indigo" style="background-color: #fce7f3; color: #db2777;"><i class="ph ph-map-pin"></i></div>
+                                <h4 class="edit-card-title">聯絡與地址資訊</h4>
                             </div>
                         </div>
                         <div class="edit-form-grid">
-                            <div class="edit-form-group">
-                                <label>電話</label>
-                                <div style="display: flex; gap: 8px;">
-                                    <input type="text" id="editFormPhone" class="form-input" style="flex: 1;" placeholder="0912345678">
-                                    <button type="button" class="btn btn-primary" style="background-color: #6366f1; border-color: #6366f1; border-radius: 8px; padding: 0 16px;">校驗</button>
-                                </div>
+                            <div class="edit-form-group"><label>電話前綴國碼</label><input type="text" id="editFormPhoneCode" class="form-input" placeholder="+55"></div>
+                            <div class="edit-form-group"><label>手機號</label><input type="text" id="editFormPhone" class="form-input"></div>
+                            <div class="edit-form-group"><label>信箱</label><input type="text" id="editFormEmail" class="form-input"></div>
+                            <div class="edit-form-group" style="grid-column: 1 / -1;"><label>地址</label><input type="text" id="editFormAddress" class="form-input"></div>
+                            <div class="edit-form-group"><label>省</label><input type="text" id="editFormProvince" class="form-input"></div>
+                            <div class="edit-form-group"><label>城市</label><input type="text" id="editFormCity" class="form-input"></div>
+                            <div class="edit-form-group"><label>郵遞區號</label><input type="text" id="editFormZipcode" class="form-input"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: 通訊軟體與社群帳號 -->
+                    <div class="edit-card">
+                        <div class="edit-card-header">
+                            <div class="edit-card-title-wrap">
+                                <div class="icon-container blue" style="background-color: #dbeafe; color: #2563eb;"><i class="ph ph-chats"></i></div>
+                                <h4 class="edit-card-title">通訊軟體與社群帳號</h4>
                             </div>
-                            <div class="edit-form-group"><label>email</label><input type="text" id="editFormEmail" class="form-input"></div>
+                        </div>
+                        <div class="edit-form-grid">
                             <div class="edit-form-group"><label>QQ</label><input type="text" id="editFormQQ" class="form-input"></div>
-                            <div class="edit-form-group"><label>微信</label><input type="text" id="editFormWechat" class="form-input"></div>
+                            <div class="edit-form-group"><label>微信 (WeChat)</label><input type="text" id="editFormWechat" class="form-input"></div>
                             <div class="edit-form-group"><label>Zalo</label><input type="text" id="editFormZalo" class="form-input"></div>
                             <div class="edit-form-group"><label>WhatsApp</label><input type="text" id="editFormWhatsapp" class="form-input"></div>
                             <div class="edit-form-group"><label>Telegram</label><input type="text" id="editFormTelegram" class="form-input"></div>
                             <div class="edit-form-group"><label>Facebook</label><input type="text" id="editFormFacebook" class="form-input"></div>
+                            <div class="edit-form-group"><label>Line</label><input type="text" id="editFormLine" class="form-input"></div>
+                            <div class="edit-form-group"><label>Instagram</label><input type="text" id="editFormInstagram" class="form-input"></div>
+                            <div class="edit-form-group"><label>TikTok</label><input type="text" id="editFormTikTok" class="form-input"></div>
+                            <div class="edit-form-group"><label>Twitter</label><input type="text" id="editFormTwitter" class="form-input"></div>
+                            <div class="edit-form-group"><label>谷歌帳號 (Google)</label><input type="text" id="editFormGoogle" class="form-input"></div>
                         </div>
                     </div>
 
-                    <!-- Card 3: 第三方登入綁定 -->
+                </form>
+            </div>
+
+
+            <div class="tab-content-panel" id="tabContentSettings" style="display: none;">
+                <form id="userEditFormSettings" class="user-edit-form" style="display: flex; flex-direction: column;">
+                    
+                    <!-- Card 5: 財務與其他設定 -->
                     <div class="edit-card">
-                        <div class="edit-card-header" style="margin-bottom: 16px;">
+                        <div class="edit-card-header">
                             <div class="edit-card-title-wrap">
-                                <div class="icon-container blue" style="background-color: #f8fafc; border: 1px solid #e2e8f0; color: #4f46e5;"><i class="ph ph-coffee"></i></div>
-                                <h4 class="edit-card-title">第三方登入綁定</h4>
+                                <div class="icon-container indigo" style="background-color: #fef08a; color: #ca8a04;"><i class="ph ph-gear"></i></div>
+                                <h4 class="edit-card-title">財務與其他設定</h4>
                             </div>
                         </div>
                         <div class="edit-form-grid">
-                            <div class="edit-form-group">
-                                <label>Facebook 登入</label>
-                                <div style="height: 40px; border-radius: 8px; border: 1px dashed #cbd5e1; background-color: #f8fafc; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 14px;">尚未綁定</div>
+                            <div class="edit-form-group" style="grid-column: 1 / -1;">
+                                <label>備註</label>
+                                <textarea id="editFormRemarks" class="form-input" style="height: 80px; resize: vertical; border: 1px solid var(--border-color); border-radius: 4px; padding: 8px;"></textarea>
                             </div>
                             <div class="edit-form-group">
-                                <label>Google 登入</label>
-                                <div style="height: 40px; border-radius: 8px; border: 1px dashed #cbd5e1; background-color: #f8fafc; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 14px;">尚未綁定</div>
+                                <label style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" id="editFormStopThirdPartyRebate" style="width: 16px; height: 16px;">
+                                    停止第三方返水
+                                </label>
                             </div>
                             <div class="edit-form-group">
-                                <label>Telegram 登入</label>
-                                <div style="height: 40px; border-radius: 8px; border: 1px dashed #cbd5e1; background-color: #f8fafc; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 14px;">尚未綁定</div>
+                                <label style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" id="editFormStopSportsRebate" style="width: 16px; height: 16px;">
+                                    停止體育返水
+                                </label>
+                            </div>
+                            <div class="edit-form-group">
+                                <label>當天最大充值返利次數</label>
+                                <input type="number" id="editFormMaxDepositRebateCount" class="form-input" value="0" min="0">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Card 4: 提現信息 -->
-                    
+                    <!-- Original Card: 提現信息 -->
                     <div class="edit-card">
                         <div class="edit-card-header" style="margin-bottom: 0;">
                             <div class="edit-card-title-wrap">
@@ -777,134 +1002,6 @@
                 </form>
             </div>
 
-            
-            <!-- Tab 2: 會員設置 (Member Settings) -->
-            <div class="tab-content-panel" id="tabContentSettings" style="display: none;">
-                <div class="member-settings-container" style="display: flex; flex-direction: column;">
-                    
-                    <!-- Card 1: 費率與備註 -->
-                    <div class="edit-card">
-                        <div class="edit-card-header" style="margin-bottom: 16px;">
-                            <div class="edit-card-title-wrap">
-                                <div class="icon-container indigo" style="background-color: #f5f3ff; color: #7c3aed;"><i class="ph ph-currency-dollar"></i></div>
-                                <h4 class="edit-card-title">費率與備註</h4>
-                            </div>
-                        </div>
-                        <div class="edit-form-group" style="margin-bottom: 16px;">
-                            <label style="display: flex; align-items: center; gap: 4px;">提現費率 <i class="ph ph-question" style="color: #94a3b8; font-size: 14px;"></i></label>
-                            <input type="text" id="settingWithdrawFee" class="form-input" placeholder="例如：0.015（支持三位小數）">
-                        </div>
-                        <div class="edit-form-group">
-                            <label>備註</label>
-                            <textarea id="editFormRemark" class="form-textarea" rows="3" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 12px; font-size: 14px; outline: none; resize: vertical;" placeholder="大戶需關注"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Card 2: 權限與限制 -->
-                    <div class="edit-card">
-                        <div class="edit-card-header" style="margin-bottom: 16px;">
-                            <div class="edit-card-title-wrap">
-                                <div class="icon-container indigo" style="background-color: #f5f3ff; color: #7c3aed;"><i class="ph ph-lock-key"></i></div>
-                                <h4 class="edit-card-title">權限與限制</h4>
-                            </div>
-                            <span class="edit-card-subtitle">開啟即代表啟用該限制 / 功能</span>
-                        </div>
-                        <div style="display: flex; flex-direction: column;">
-                            <!-- Item 1 -->
-                            <div class="setting-switch-item">
-                                <div class="setting-switch-content">
-                                    <div class="setting-switch-title">停止第三方返水</div>
-                                    <div class="setting-switch-desc">開啟後，該用戶將不再享有第三方返水優惠</div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="settingStopThirdRebate">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <!-- Item 2 -->
-                            <div class="setting-switch-item">
-                                <div class="setting-switch-content">
-                                    <div class="setting-switch-title">限制轉入第三方</div>
-                                    <div class="setting-switch-desc">開啟後，該用戶帳戶無法轉帳至第三方平台</div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="settingLimitThirdTransfer">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <!-- Item 3 -->
-                            <div class="setting-switch-item">
-                                <div class="setting-switch-content">
-                                    <div class="setting-switch-title">停止彩票返水</div>
-                                    <div class="setting-switch-desc">開啟後，該用戶的彩票投注將不再計算返水</div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="settingStopLotteryRebate">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <!-- Item 4 -->
-                            <div class="setting-switch-item">
-                                <div class="setting-switch-content">
-                                    <div class="setting-switch-title">邀請碼註冊 <i class="ph ph-question" style="color: #94a3b8; font-size: 14px;"></i></div>
-                                    <div class="setting-switch-desc">此用戶為透過邀請碼完成註冊</div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="settingInviteReg" checked>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <!-- Item 5 -->
-                            <div class="setting-switch-item">
-                                <div class="setting-switch-content">
-                                    <div class="setting-switch-title">停止成長值和等級更新</div>
-                                    <div class="setting-switch-desc">開啟後，該用戶的成長值與會員等級將被凍結</div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="settingStopLevelUpdate">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <!-- Item 6 -->
-                            <div class="setting-switch-item">
-                                <div class="setting-switch-content">
-                                    <div class="setting-switch-title">能否修改下級賠率</div>
-                                    <div class="setting-switch-desc">開啟後，該代理可自行調整下級會員的賠率設定</div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="settingCanEditSubOdds">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 3: 每日次數限制 -->
-                    <div class="edit-card">
-                        <div class="edit-card-header" style="margin-bottom: 16px;">
-                            <div class="edit-card-title-wrap">
-                                <div class="icon-container indigo" style="background-color: #f5f3ff; color: #7c3aed;"><i class="ph ph-chart-bar"></i></div>
-                                <h4 class="edit-card-title">每日次數限制</h4>
-                            </div>
-                        </div>
-                        <div class="edit-form-grid">
-                            <div class="edit-form-group">
-                                <label>當天最大提款次數</label>
-                                <input type="text" id="settingMaxWithdraw" class="form-input" placeholder="未設置即不限制">
-                                <span style="font-size: 12px; color: #94a3b8; margin-top: 4px;">留空代表不限制提款次數</span>
-                            </div>
-                            <div class="edit-form-group">
-                                <label>當天最大充值返利次數</label>
-                                <input type="text" id="settingMaxRebate" class="form-input" placeholder="未設置即不限制">
-                                <span style="font-size: 12px; color: #94a3b8; margin-top: 4px;">留空代表不限制充值返利次數</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-</div>
-            </div>
         </div>
         </main>
 
@@ -1004,14 +1101,15 @@
                             <tbody>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 12px 8px; text-align: center;">megan002</td>
-                                    <td style="padding: 12px 8px; text-align: center;"></td>
+                                    <td style="padding: 12px 8px; text-align: center;">無數據</td>
                                     <td style="padding: 12px 8px; text-align: center;">2026-07-28 16:30:42</td>
                                     <td style="padding: 12px 8px; text-align: center;"><span
                                             class="badge badge-normal">正常</span></td>
-                                    <td style="padding: 12px 8px; text-align: center;">0</td>
-                                    <td style="padding: 12px 8px; text-align: center;">0</td>
-                                    <td style="padding: 12px 8px; text-align: center;"></td>
+                                    <td style="padding: 12px 8px; text-align: center;">0.000</td>
+                                    <td style="padding: 12px 8px; text-align: center;">0.000</td>
+                                    <td style="padding: 12px 8px; text-align: center;">－</td>
                                     <td style="padding: 12px 8px; text-align: center;">
+                                        <a href="#" class="user-detail-link" data-uid="1239361229" style="color: var(--primary-color); margin-right: 8px;">详情</a>
                                         <a href="#" style="color: var(--primary-color); margin-right: 8px;">查看下级</a>
                                         <a href="#" style="color: var(--primary-color);">返回最上级</a>
                                     </td>
