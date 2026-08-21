@@ -2901,11 +2901,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const withdrawPwdIn = document.getElementById('editFormWithdrawPwd');
         if (withdrawPwdIn) withdrawPwdIn.value = ''; // Reset password field
 
-        const loginPwdErrorIn = document.getElementById('editFormLoginPwdError');
-        if (loginPwdErrorIn) loginPwdErrorIn.value = user.loginPwdErrorCount || 0;
+        const loginPwdErrorIn = document.getElementById('editFormLoginPwdErrorCount');
+        if (loginPwdErrorIn) loginPwdErrorIn.innerText = (user.loginPwdErrorCount || 0) + '次';
 
-        const withdrawPwdErrorIn = document.getElementById('editFormWithdrawPwdError');
-        if (withdrawPwdErrorIn) withdrawPwdErrorIn.value = user.withdrawPwdErrorCount || 0;
+        const withdrawPwdErrorIn = document.getElementById('editFormWithdrawPwdErrorCount');
+        if (withdrawPwdErrorIn) withdrawPwdErrorIn.innerText = (user.withdrawPwdErrorCount || 0) + '次';
 
         // 2. Personal Basic Info
         const realNameIn = document.getElementById('editFormRealName');
@@ -3109,9 +3109,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnClearLoginPwdError = document.getElementById('btnClearLoginPwdError');
     if (btnClearLoginPwdError) {
         btnClearLoginPwdError.addEventListener('click', () => {
-            const errorIn = document.getElementById('editFormLoginPwdError');
+            const errorIn = document.getElementById('editFormLoginPwdErrorCount');
             if (errorIn) {
-                errorIn.value = 0;
+                errorIn.innerText = '0次';
                 showToast('登錄密碼錯誤次數已清除');
             }
         });
@@ -3120,9 +3120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnClearWithdrawPwdError = document.getElementById('btnClearWithdrawPwdError');
     if (btnClearWithdrawPwdError) {
         btnClearWithdrawPwdError.addEventListener('click', () => {
-            const errorIn = document.getElementById('editFormWithdrawPwdError');
+            const errorIn = document.getElementById('editFormWithdrawPwdErrorCount');
             if (errorIn) {
-                errorIn.value = 0;
+                errorIn.innerText = '0次';
                 showToast('資金密碼錯誤次數已清除');
             }
         });
