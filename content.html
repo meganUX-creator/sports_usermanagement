@@ -361,7 +361,6 @@
             <div class="user-edit-tabs"
                 style="display: flex; gap: 24px; border-bottom: 1px solid var(--border-color); padding: 0 24px; background: #ffffff;">
                 <button type="button" class="user-edit-tab-item user-details-tab-item active" data-target="detailsBasic">會員信息</button>
-                <button type="button" id="detailsAuditTabBtn" class="user-edit-tab-item user-details-tab-item" data-target="detailsAudit" style="display: none;">會員審核</button>
                 <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsWithdraw">提款信息</button>
                 <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsLogin">登入與註冊紀錄</button>
             </div>
@@ -466,10 +465,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 1.5: 會員審核 (Member Audit) -->
-                <div class="details-tab-content-panel" id="detailsAudit" style="display: none;">
-                    <!-- rendered via JS -->
-                </div>
+
 
 
                 <!-- Tab 2: 提現信息 (Withdraw Info) -->
@@ -1001,6 +997,31 @@
             </div>
 
         </div>
+        <!-- Global Confirm Modal -->
+    <div class="modal-overlay" id="globalConfirmModal" style="display: none; z-index: 9999;">
+        <div class="modal-content" style="width: 320px; max-width: 90vw; background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 20px;">
+                <h3 id="globalConfirmModalTitle" style="margin: 0; font-size: 16px; font-weight: 600; color: #1e293b;">確認操作</h3>
+                <button class="btn-icon btn-close-modal" id="btnGlobalConfirmClose">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 24px 20px; text-align: center;">
+                <div style="margin-bottom: 16px;">
+                    <i class="ph-fill ph-warning-circle" style="font-size: 40px; color: #f59e0b;"></i>
+                </div>
+                <p id="globalConfirmModalMessage" style="font-size: 15px; color: #475569; margin: 0; line-height: 1.5;"></p>
+            </div>
+            <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: center; gap: 12px; background: #f8fafc; border-radius: 0 0 12px 12px;">
+                <button class="btn btn-outline" id="btnGlobalConfirmCancel" style="padding: 8px 24px;">取消</button>
+                <button class="btn btn-primary" id="btnGlobalConfirmOk" style="padding: 8px 24px;">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="patch_settings.js"></script>
+
         </main>
 
         <script src="script.js"></script>

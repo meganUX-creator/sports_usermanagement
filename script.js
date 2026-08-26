@@ -125,20 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            
-            // Real-time toggle for trace 27 (Audit Info)
-            if (e.target.getAttribute('data-trace') === '27') {
-                const isChecked = e.target.checked;
-                const detailsAuditTabBtn = document.getElementById('detailsAuditTabBtn');
-                if (detailsAuditTabBtn) {
-                    detailsAuditTabBtn.style.display = isChecked ? '' : 'none';
-                    // If unchecked while active, switch back to basic tab
-                    if (!isChecked && detailsAuditTabBtn.classList.contains('active')) {
-                        const basicTabBtn = document.querySelector('.user-details-tab-item[data-target="detailsBasic"]');
-                        if (basicTabBtn) basicTabBtn.click();
-                    }
-                }
-            }
         });
     });
 
@@ -618,6 +604,31 @@ document.addEventListener('DOMContentLoaded', () => {
         return '***.***.***.***';
     };
 
+    window.maskPhone = function(phone) {
+        if (!phone || phone === '-' || phone === '未驗證' || phone === '未填寫') return phone;
+        phone = String(phone);
+        if (phone.length <= 4) return '**' + phone;
+        return '**' + phone.substring(phone.length - 4);
+    };
+
+    window.maskEmail = function(email) {
+        if (!email || email === '-') return '-';
+        email = String(email);
+        const parts = email.split('@');
+        if (parts.length !== 2) return window.maskMiddle(email);
+        const username = parts[0];
+        const domain = parts[1];
+        if (username.length <= 2) return username + '**@' + domain;
+        return username.substring(0, 2) + '**@' + domain;
+    };
+
+    window.maskMiddle = function(str) {
+        if (!str || str === '-') return '-';
+        str = String(str);
+        if (str.length <= 4) return str.substring(0, 1) + '***' + str.substring(str.length - 1);
+        return str.substring(0, 2) + '***' + str.substring(str.length - 2);
+    };
+
     window.getPhoneStatusHtml = function(phone) {
         if (phone === '審核中') return '<span style="color: #ef4444; font-weight: 600;">審核中</span>';
         if (phone === '待重新綁定') return '<span style="color: #f59e0b; font-weight: 500;">待重新綁定</span>';
@@ -630,15 +641,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const compactColumnsConfig = [
         { id: 'uid', group: '基本', label: '用户ID', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="uid">${renderDataState(user.uid, 'copyable')}</td>` },
         { id: 'account', group: '基本', label: '会员名', checkboxIndex: 3, render: (user) => `<td data-col="account"><a href="#" class="cell-username user-detail-link" data-uid="${user.uid}">${renderDataState(user.account, 'copyable')}</a></td>` },
-        { id: 'online', group: '状态', label: '在线', checkboxIndex: 1, render: (user) => `<td data-col="online"><span class="status-dot-icon" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${user.offlineDays === 0 ? '#10b981' : '#9ca3af'};"></span></td>` },
-        { id: 'status', group: '状态', label: '状态', checkboxIndex: 1, render: (user) => `<td data-col="status"><span class="user-custom-tag ${user.status === '正常' ? 'tag-green' : user.status === '冻结' ? 'tag-blue' : 'tag-red'}">${user.status}</span></td>` },
+        { id: 'online', group: '状态', label: '在线', checkboxIndex: 1, render: (user) => {
+            const isOnline = user.offlineDays === 0;
+            const isDisabled = user.status === '停用' || user.status === '冻结';
+            
+            const badgeBg = isOnline ? '#dcfce7' : '#f1f5f9';
+            const badgeColor = isOnline ? '#16a34a' : '#64748b';
+            const dotColor = isOnline ? '#10b981' : '#9ca3af';
+            
+            const statusBadge = `
+                <div style="display: inline-flex; align-items: center; gap: 4px; background: ${badgeBg}; padding: 2px 8px; border-radius: 12px;">
+                    <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${dotColor};"></span>
+                    <span style="color: ${badgeColor}; font-size: 12px; font-weight: 500;">${isOnline ? '在线' : '离线'}</span>
+                </div>
+            `;
+            
+            let buttonsHtml = `<div style="display: flex; align-items: center; justify-content: flex-start; gap: 6px;">${statusBadge}`;
+            if (!isDisabled) {
+                buttonsHtml += `<a href="#" class="op-link btn-action-disable" style="font-size: 12px; padding: 4px 8px; background: #ef4444; color: white; border-radius: 4px; text-decoration: none;" onclick="window.showConfirmModal('確定要停用此會員嗎？', function(){ window.handleDisableUser('${user.uid}'); }); return false;">停用</a>`;
+            }
+            if (isOnline) {
+                buttonsHtml += `<a href="#" class="op-link btn-action-kick" style="font-size: 12px; padding: 4px 8px; background: #f59e0b; color: white; border-radius: 4px; text-decoration: none;" onclick="window.showConfirmModal('確定要將此會員踢下線嗎？', function(){ window.handleKickOfflineUser('${user.uid}'); }); return false;">踢下线</a>`;
+            }
+            buttonsHtml += `</div>`;
+            return `<td data-col="online">${buttonsHtml}</td>`;
+        } },
+        { id: 'status', group: '状态', label: '状态', checkboxIndex: 1, render: (user) => {
+            let color = '#333';
+            if (user.status === '正常') color = '#16a34a'; // Green
+            else if (user.status === '冻结') color = '#3b82f6'; // Blue
+            else if (user.status === '停用') color = '#ef4444'; // Red
+            else if (user.status === '待审核' || user.status === '待審核') color = '#f59e0b'; // Orange
+            return `<td data-col="status"><span style="color: ${color}; font-weight: 500;">${user.status}</span></td>`;
+        } },
         { id: 'avatar', group: '状态', label: '头像', checkboxIndex: 2, render: (user) => `<td data-col="avatar"><div class="avatar-cell" style="width:24px;height:24px;border-radius:50%;background:#3b82f6;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;margin:0 auto;">${user.account.charAt(0).toLowerCase()}</div></td>` },
         { id: 'realName', group: '账号', label: '真实姓名', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="realName">${hasPerm(37) ? renderDataState(user.realName) : window.maskRealName(user.realName)}</td>` },
         { id: 'nickname', group: '账号', label: '昵称', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="nickname">${(user.nickname && user.nickname !== '-') ? user.nickname : renderDataState(user.account)}</td>` },
         { id: 'agentId', group: '会员信息（详细）', label: '代理', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="agentId">${renderDataState(user.agentId)}</td>` },
         { id: 'inviter', group: '会员信息（详细）', label: '邀请人', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="inviter">${renderDataState(user.inviter)}</td>` },
         { id: 'registerMode', group: '会员信息（详细）', label: '注册模式', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="registerMode">${user.registerMode || '一般注册'}</td>` },
-        { id: 'phone', group: '会员信息（详细）', label: '手机号', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="phone">${getPhoneStatusHtml(user.phone)}</td>` },
+        { id: 'phone', group: '会员信息（详细）', label: '手机号', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="phone">${hasPerm(85) ? (user.phone !== '未驗證' && user.phone !== '末綁定' && user.phone !== '-' ? user.phone : getPhoneStatusHtml(user.phone)) : window.maskPhone(user.phone)}</td>` },
         { id: 'deviceType', group: '会员信息（详细）', label: '设备类型', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="deviceType">${renderDataState(user.deviceType)}</td>` },
         { id: 'currency', group: '会员信息（详细）', label: '用户币别', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="currency"><span style="color: #ef4444;">${user.currency || 'BRL'}</span></td>` },
         { id: 'country', group: '会员信息（详细）', label: '国家', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="country"><span style="color: #ef4444;">${user.country || '巴西'}</span></td>` },
@@ -871,12 +913,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Comprehensive Mock Users Database (50 Users for pagination demonstration)
     const baseMockUsers = [
-        { uid: "1239361225", account: "mingv0717001", realName: "李小明", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "末綁定", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["VIP 客戶", "高頻交易", "大戶", "標籤四", "標籤五", "標籤六"], status: "冻结", date: "2023-01-01 12:00:00", lastLogin: "2023-01-10 15:30:00", offlineDays: 9, ip: "192.168.1.1", remark: "-", followRemark: "-", note: "-", deviceType: "iOS" },
+        { uid: "1239361225", account: "mingv0717001", realName: "李小明", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "末綁定", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["VIP 客戶", "高頻交易", "大戶", "標籤四", "標籤五", "標籤六"], status: "正常", date: "2023-01-01 12:00:00", lastLogin: "2023-01-10 15:30:00", offlineDays: 9, ip: "192.168.1.1", remark: "-", followRemark: "-", note: "-", deviceType: "iOS" },
         { uid: "1239361224", account: "albertvn021", realName: "黃大維", nickname: "阿布", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "未驗證", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "06077790", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["異常風險", "VIP 客戶", "標籤三", "標籤四", "標籤五"], status: "停用", date: "2023-01-02 10:00:00", lastLogin: "2023-01-11 09:20:00", offlineDays: 9, ip: "192.168.1.2", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
-        { uid: "1239361223", account: "vip_king", realName: "李娜", realNameAudited: true, birthdayAudited: true, nickname: "鄭姐", agentId: "AG888", inviter: "nnest123556", registerMode: "一般註冊", phone: "13812348888", payLevel: "默認層", growth: 1250, level: "鑽石會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "INV02", directTeam: "12/8", vipLevel: 3, vipGrowth: 6800, creditValue: 500, availableCredit: 2000, commissionBal: 680, balanceBuy: 8750, arrears: "0", interest: 120, thirdBal: 320, points: 450, deposit: 3200, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 8, withdrawCount: 4, tags: ["正常", "活躍", "高消費", "標籤四", "標籤五"], status: "冻结", date: "2023-01-05 14:15:00", lastLogin: "2023-01-15 18:45:00", offlineDays: 0, ip: "192.168.1.3", remark: "-", followRemark: "-", note: "-", deviceType: "PC" },
+        { uid: "1239361223", account: "vip_king", realName: "李娜", realNameAudited: true, birthdayAudited: true, nickname: "鄭姐", agentId: "AG888", inviter: "nnest123556", registerMode: "一般註冊", phone: "13812348888", payLevel: "默認層", growth: 1250, level: "鑽石會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "INV02", directTeam: "12/8", vipLevel: 3, vipGrowth: 6800, creditValue: 500, availableCredit: 2000, commissionBal: 680, balanceBuy: 8750, arrears: "0", interest: 120, thirdBal: 320, points: 450, deposit: 3200, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 8, withdrawCount: 4, tags: ["正常", "活躍", "高消費", "標籤四", "標籤五"], status: "正常", date: "2023-01-05 14:15:00", lastLogin: "2023-01-15 18:45:00", offlineDays: 0, ip: "192.168.1.3", remark: "-", followRemark: "-", note: "-", deviceType: "PC" },
         { uid: "1239361226", account: "test_user_1", realName: "王大明", nickname: "王大", agentId: "dl", inviter: "nnest123556", registerMode: "後台新增", phone: "0912345678", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE100", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 500, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "0", interest: 0, thirdBal: 150, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["新註冊"], status: "停用", date: "2023-02-01 10:00:00", lastLogin: "2023-03-01 15:30:00", offlineDays: 30, ip: "192.168.2.10", remark: "大戶需關注", followRemark: "-", note: "-", deviceType: "H5" },
         { uid: "1239361227", account: "test_user_2", realName: "林小華", nickname: "", agentId: "AG888", inviter: "-", registerMode: "一般註冊", phone: "0987654321", payLevel: "默認層", growth: 150, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "1/1", vipLevel: 1, vipGrowth: 50, creditValue: 0, availableCredit: 1000, commissionBal: 15, balanceBuy: 300, arrears: "0", interest: 2, thirdBal: 0, points: 25, deposit: 2000, withdraw: 500, withdrawPre: "-", adminDeduct: "-", depositCount: 1, withdrawCount: 1, tags: ["新註冊"], status: "停用", date: "2023-02-02 10:00:00", lastLogin: "2023-03-02 15:30:00", offlineDays: 1, ip: "192.168.1.100", remark: "-", followRemark: "-", note: "-", deviceType: null },
-        { uid: "1239361228", account: "test_user_3", realName: "周思齊", nickname: "Alice", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "13912341002", payLevel: "默認層", growth: 300, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE102", directTeam: "2/2", vipLevel: 2, vipGrowth: 100, creditValue: 500, availableCredit: 2000, commissionBal: 30, balanceBuy: 600, arrears: "0", interest: 4, thirdBal: 0, points: 50, deposit: 4000, withdraw: 1000, withdrawPre: "-", adminDeduct: "-", depositCount: 2, withdrawCount: 2, tags: ["新註冊"], status: "冻结", date: "2023-02-03 10:00:00", lastLogin: "2023-03-03 15:30:00", offlineDays: 2, ip: "192.168.2.12", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
+        { uid: "1239361228", account: "test_user_3", realName: "周思齊", nickname: "Alice", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "13912341002", payLevel: "默認層", growth: 300, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE102", directTeam: "2/2", vipLevel: 2, vipGrowth: 100, creditValue: 500, availableCredit: 2000, commissionBal: 30, balanceBuy: 600, arrears: "0", interest: 4, thirdBal: 0, points: 50, deposit: 4000, withdraw: 1000, withdrawPre: "-", adminDeduct: "-", depositCount: 2, withdrawCount: 2, tags: ["新註冊"], status: "正常", date: "2023-02-03 10:00:00", lastLogin: "2023-03-03 15:30:00", offlineDays: 2, ip: "192.168.2.12", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
         { uid: "1239361229", account: "test_user_4", realName: "陳大文", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "未綁定", payLevel: "默認層", growth: 450, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "3/0", vipLevel: 3, vipGrowth: 150, creditValue: 0, availableCredit: 3000, commissionBal: 45, balanceBuy: 900, arrears: "0", interest: 6, thirdBal: 0, points: 75, deposit: 6000, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 3, withdrawCount: 3, tags: ["新註冊"], status: "冻结", date: "2023-02-04 10:00:00", lastLogin: "2023-03-04 15:30:00", offlineDays: 3, ip: "192.168.2.13", remark: "這是一段非常長非常長非常長的備註，用來測試單行截斷與懸停提示的效果是否正常運作。", followRemark: "-", note: "-", deviceType: "" },
         { uid: "1239361230", account: "test_user_5", realName: "許大茂", nickname: "小明", agentId: "AG888", inviter: "nnest123556", registerMode: "後台新增", phone: "13912341004", payLevel: "默認層", growth: 600, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE104", directTeam: "4/1", vipLevel: 0, vipGrowth: 200, creditValue: 500, availableCredit: 4000, commissionBal: 60, balanceBuy: 1200, arrears: "0", interest: 8, thirdBal: 150, points: 100, deposit: 8000, withdraw: 2000, withdrawPre: "-", adminDeduct: "-", depositCount: 4, withdrawCount: 4, tags: ["新註冊"], status: "冻结", date: "2023-02-05 10:00:00", lastLogin: "2023-03-05 15:30:00", offlineDays: 4, ip: "192.168.2.14", remark: "-", followRemark: "-", note: "-" },
         { uid: "1239361231", account: "test_user_6", realName: "陳阿明", nickname: "", agentId: "ag123", inviter: "-", registerMode: "一般註冊", phone: "待重新綁定", payLevel: "默認層", growth: 750, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/2", vipLevel: 1, vipGrowth: 250, creditValue: 0, availableCredit: 5000, commissionBal: 75, balanceBuy: 1500, arrears: "0", interest: 10, thirdBal: 0, points: 125, deposit: 10000, withdraw: 2500, withdrawPre: "-", adminDeduct: "-", depositCount: 5, withdrawCount: 5, tags: ["正常", "活躍"], status: "正常", date: "2023-02-06 10:00:00", lastLogin: "2023-03-06 15:30:00", offlineDays: 5, ip: "192.168.2.15", remark: "-", followRemark: "-", note: "-" },
@@ -1278,12 +1320,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openUserDetailsDrawer = function(uid) {
         const userDetailsDrawer = document.getElementById('userDetailsDrawer');
         if (!userDetailsDrawer) return;
-        
-        const detailsAuditTabBtn = document.getElementById('detailsAuditTabBtn');
-        if (detailsAuditTabBtn) {
-            detailsAuditTabBtn.style.display = hasPerm(27) ? '' : 'none';
-        }
-        
         const user = mockUsers.find(u => u.uid === uid) || mockUsers[0];
         
         const getAuditButtons = (isAudited, field = '') => {
@@ -1355,115 +1391,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. 聯絡與地址資訊
         setHtml('viewPhoneCode', user.phoneCode || '+55');
-        setHtml('viewPhone', getPhoneStatusHtml(user.phone));
-        setHtml('viewEmail', user.email || `${user.account}@example.com`);
+        setHtml('viewPhone', hasPerm(85) ? (user.phone !== '未驗證' && user.phone !== '末綁定' && user.phone !== '-' ? user.phone : (user.phone || '-')) : window.maskPhone(user.phone));
+        setHtml('viewEmail', hasPerm(86) ? (user.email || `${user.account}@example.com`) : window.maskEmail(user.email || `${user.account}@example.com`));
         setHtml('viewAddress', user.address || '-');
         setHtml('viewProvince', user.province || '-');
         setHtml('viewCity', user.city || '-');
         setHtml('viewZipcode', user.zipcode || '-');
 
         // 3. 社群與通訊軟體
-        setHtml('viewQQ', user.qq || '88392019');
-        setHtml('viewWechat', user.wechat || `wx_${user.account}`);
-        setHtml('viewZalo', user.zalo || (user.phone !== '-' ? `+84${user.phone.substring(2)}` : '-'));
-        setHtml('viewFacebook', user.facebook || `fb.me/${user.account}`);
-        setHtml('viewWhatsapp', user.whatsapp || (user.phone !== '-' ? `+84${user.phone.substring(2)}` : '-'));
-        setHtml('viewTelegram', user.telegram || `@${user.account}_tg`);
+        setHtml('viewQQ', hasPerm(87) ? (user.qq || '88392019') : window.maskMiddle(user.qq || '88392019'));
+        setHtml('viewWechat', hasPerm(88) ? (user.wechat || `wx_${user.account}`) : window.maskMiddle(user.wechat || `wx_${user.account}`));
+        
+        const zVal = user.zalo || (user.phone !== '-' ? `+84${user.phone.substring(2)}` : '-');
+        setHtml('viewZalo', hasPerm(89) ? zVal : window.maskMiddle(zVal));
+        
+        const fbVal = user.facebook || `fb.me/${user.account}`;
+        setHtml('viewFacebook', hasPerm(90) ? fbVal : window.maskMiddle(fbVal));
+        
+        const wVal = user.whatsapp || (user.phone !== '-' ? `+84${user.phone.substring(2)}` : '-');
+        setHtml('viewWhatsapp', hasPerm(91) ? wVal : window.maskMiddle(wVal));
+        
+        const tgVal = user.telegram || `@${user.account}_tg`;
+        setHtml('viewTelegram', hasPerm(92) ? tgVal : window.maskMiddle(tgVal));
 
         // 4. 備註資訊
         setHtml('viewRemark', user.remark && user.remark !== '-' ? user.remark : '暫無備註');
         setHtml('viewReturnRemark', user.returnRemark || '暫無回訪備註');
 
-        // Tab 1.5: 會員審核 (Member Audit)
-        const detailsAudit = document.getElementById('detailsAudit');
-        if (detailsAudit) {
-            detailsAudit.innerHTML = `
-            <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #ffffff;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
-                    <thead>
-                        <tr style="background-color: #f8fafc; color: var(--text-secondary); border-bottom: 1px solid var(--border-color);">
-                            <th style="padding: 16px; font-weight: 600;">變更項目</th>
-                            <th style="padding: 16px; font-weight: 600;">修改前</th>
-                            <th style="padding: 16px; font-weight: 600;">修改後</th>
-                            <th style="padding: 16px; font-weight: 600;">申請時間</th>
-                            <th style="padding: 16px; font-weight: 600; text-align: center;">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom: 1px solid var(--border-color);">
-                            <td style="padding: 16px; color: #475569;">真實姓名</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">${hasPerm(37) ? (user.realName && user.realName !== '-' ? user.realName : '-') : window.maskRealName(user.realName)}</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-25 14:30:00</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.realNameAudited)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color);">
-                            <td style="padding: 16px; color: #475569;">出生年月日</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">${user.birthday || '1995-08-18'}</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-25 14:30:00</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.birthdayAudited)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color); ${hasPerm(20) ? '' : 'display: none;'}">
-                            <td style="padding: 16px; color: #475569;">電話</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">${getPhoneStatusHtml(user.phone)}</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-25 14:35:12</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.phoneAudited, 'phone')}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color); ${hasPerm(20) ? '' : 'display: none;'}">
-                            <td style="padding: 16px; color: #475569;">email</td>
-                            <td style="padding: 16px; color: #94a3b8;">old_${user.account}@example.com</td>
-                            <td style="padding: 16px; color: #1e293b;">${user.account}@example.com</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-25 14:35:12</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.emailAudited)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color); ${hasPerm(20) ? '' : 'display: none;'}">
-                            <td style="padding: 16px; color: #475569;">QQ</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">88392019</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-26 09:12:00</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.qqAudited)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color); ${hasPerm(20) ? '' : 'display: none;'}">
-                            <td style="padding: 16px; color: #475569;">微信</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">wx_${user.account}</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-26 09:12:00</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.wechatAudited)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color); ${hasPerm(20) ? '' : 'display: none;'}">
-                            <td style="padding: 16px; color: #475569;">Zalo</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">+84${user.phone.substring(2)}</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-26 09:12:00</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.zaloAudited)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color); ${hasPerm(20) ? '' : 'display: none;'}">
-                            <td style="padding: 16px; color: #475569;">WhatsApp</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">+84${user.phone.substring(2)}</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-26 09:12:00</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.whatsappAudited)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color); ${hasPerm(20) ? '' : 'display: none;'}">
-                            <td style="padding: 16px; color: #475569;">Telegram</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">@${user.account}_tg</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-26 09:12:00</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.telegramAudited)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border-color); ${hasPerm(20) ? '' : 'display: none;'}">
-                            <td style="padding: 16px; color: #475569;">Facebook</td>
-                            <td style="padding: 16px; color: #94a3b8;">未填寫</td>
-                            <td style="padding: 16px; color: #1e293b;">fb.me/${user.account}</td>
-                            <td style="padding: 16px; color: #64748b;">2023-10-26 09:12:00</td>
-                            <td style="padding: 16px; text-align: center;">${getAuditButtons(user.facebookAudited)}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>`;
-        }
+
         
         // Tab 2: 提現信息
         const withdrawTbody = document.getElementById('viewWithdrawTableBody');
@@ -2120,28 +2075,39 @@ document.addEventListener('DOMContentLoaded', () => {
             pagedUsers.forEach(user => {
             const tr = document.createElement('tr');
             
-            let rowClass = '';
-            if (user.tags && user.tags.includes('異常風險')) {
-                rowClass = 'row-danger';
-            } else if (user.tags && (user.tags.includes('VIP 客戶') || user.tags.includes('大戶'))) {
-                rowClass = 'row-warning';
-            } else if (user.tags && (user.tags.includes('活躍') || user.tags.includes('正常'))) {
-                rowClass = 'row-success';
-            }
-            if (rowClass) {
-                tr.classList.add(rowClass);
-            }
+
 
             if (currentTableMode === 'nested') {
                 // Nested Mode Layout
                 let nestedRowHtml = `<td style="text-align: center;"><input type="checkbox" class="user-checkbox"></td>`;
 
                 if (nestedColumnVisibility['online']) {
+                    const isOnline = user.offlineDays === 0;
+                    const isDisabled = user.status === '停用' || user.status === '冻结';
+                    
+                    const badgeBg = isOnline ? '#dcfce7' : '#f1f5f9';
+                    const badgeColor = isOnline ? '#16a34a' : '#64748b';
+                    const dotColor = isOnline ? '#10b981' : '#9ca3af';
+                    
+                    const statusBadge = `
+                        <div style="display: inline-flex; align-items: center; gap: 4px; background: ${badgeBg}; padding: 2px 10px; border-radius: 12px;">
+                            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${dotColor};"></span>
+                            <span style="color: ${badgeColor}; font-size: 12px; font-weight: 500;">${isOnline ? '在线' : '离线'}</span>
+                        </div>
+                    `;
+                    
+                    let actionsHtml = '';
+                    if (!isDisabled) {
+                        actionsHtml += `<a href="#" class="op-link btn-action-disable" style="font-size: 12px; padding: 4px 12px; background: #ef4444; color: white; border-radius: 4px; text-decoration: none; text-align: center;" onclick="window.showConfirmModal('確定要停用此會員嗎？', function(){ window.handleDisableUser('${user.uid}'); }); return false;">停用</a>`;
+                    }
+                    if (isOnline) {
+                        actionsHtml += `<a href="#" class="op-link btn-action-kick" style="font-size: 12px; padding: 4px 12px; background: #f59e0b; color: white; border-radius: 4px; text-decoration: none; text-align: center;" onclick="window.showConfirmModal('確定要將此會員踢下線嗎？', function(){ window.handleKickOfflineUser('${user.uid}'); }); return false;">踢下线</a>`;
+                    }
+                    
                     nestedRowHtml += `<td style="text-align: center;">
-                        <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                            <a href="#" class="op-link">停用</a>
-                            <span style="color: #10b981; font-size: 12px;">在线</span>
-                            <a href="#" class="op-link">踢下线</a>
+                        <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
+                            ${statusBadge}
+                            ${actionsHtml}
                         </div>
                     </td>`;
                 }
@@ -2936,10 +2902,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (phoneCodeIn) phoneCodeIn.value = user.phoneCode || '+55';
 
         const phoneIn = document.getElementById('editFormPhone');
-        if (phoneIn) phoneIn.value = (user.phone !== '未驗證' && user.phone !== '末綁定' && user.phone !== '-') ? user.phone : '';
+        if (phoneIn) {
+            if (hasPerm(85)) {
+                phoneIn.value = (user.phone !== '未驗證' && user.phone !== '末綁定' && user.phone !== '-') ? user.phone : '';
+                phoneIn.disabled = false;
+            } else {
+                phoneIn.value = window.maskPhone(user.phone);
+                phoneIn.disabled = true;
+            }
+        }
 
         const emailIn = document.getElementById('editFormEmail');
-        if (emailIn) emailIn.value = user.email || '';
+        if (emailIn) {
+            if (hasPerm(86)) {
+                emailIn.value = user.email || '';
+                emailIn.disabled = false;
+            } else {
+                emailIn.value = window.maskEmail(user.email);
+                emailIn.disabled = true;
+            }
+        }
 
         const addressIn = document.getElementById('editFormAddress');
         if (addressIn) addressIn.value = user.address || '';
@@ -2955,22 +2937,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Social Accounts
         const qqIn = document.getElementById('editFormQQ');
-        if (qqIn) qqIn.value = user.qq || '';
+        if (qqIn) {
+            if (hasPerm(87)) {
+                qqIn.value = user.qq || '';
+                qqIn.disabled = false;
+            } else {
+                qqIn.value = window.maskMiddle(user.qq);
+                qqIn.disabled = true;
+            }
+        }
 
         const wechatIn = document.getElementById('editFormWechat');
-        if (wechatIn) wechatIn.value = user.wechat || '';
+        if (wechatIn) {
+            if (hasPerm(88)) {
+                wechatIn.value = user.wechat || '';
+                wechatIn.disabled = false;
+            } else {
+                wechatIn.value = window.maskMiddle(user.wechat);
+                wechatIn.disabled = true;
+            }
+        }
 
         const zaloIn = document.getElementById('editFormZalo');
-        if (zaloIn) zaloIn.value = user.zalo || '';
+        if (zaloIn) {
+            if (hasPerm(89)) {
+                zaloIn.value = user.zalo || '';
+                zaloIn.disabled = false;
+            } else {
+                zaloIn.value = window.maskMiddle(user.zalo);
+                zaloIn.disabled = true;
+            }
+        }
 
         const whatsappIn = document.getElementById('editFormWhatsapp');
-        if (whatsappIn) whatsappIn.value = user.whatsapp || '';
+        if (whatsappIn) {
+            if (hasPerm(91)) {
+                whatsappIn.value = user.whatsapp || '';
+                whatsappIn.disabled = false;
+            } else {
+                whatsappIn.value = window.maskMiddle(user.whatsapp);
+                whatsappIn.disabled = true;
+            }
+        }
 
         const telegramIn = document.getElementById('editFormTelegram');
-        if (telegramIn) telegramIn.value = user.telegram || '';
+        if (telegramIn) {
+            if (hasPerm(92)) {
+                telegramIn.value = user.telegram || '';
+                telegramIn.disabled = false;
+            } else {
+                telegramIn.value = window.maskMiddle(user.telegram);
+                telegramIn.disabled = true;
+            }
+        }
 
         const facebookIn = document.getElementById('editFormFacebook');
-        if (facebookIn) facebookIn.value = user.facebook || '';
+        if (facebookIn) {
+            if (hasPerm(90)) {
+                facebookIn.value = user.facebook || '';
+                facebookIn.disabled = false;
+            } else {
+                facebookIn.value = window.maskMiddle(user.facebook);
+                facebookIn.disabled = true;
+            }
+        }
 
         const lineIn = document.getElementById('editFormLine');
         if (lineIn) lineIn.value = user.line || '';
@@ -3174,47 +3204,7 @@ window.handleAuditAction = function(btn, message) {
     }
 }
 
-window.handleResetAction = function(btn, uid, field) {
-    if(confirm('確定要重置此項資料嗎？')) {
-        showToast('已重置');
-        
-        let newValueHtml = '-';
-        
-        if (uid && field && window.mockUsers) {
-            const user = window.mockUsers.find(u => u.uid === uid);
-            if (user) {
-                if (field === 'phone') {
-                    user.phone = '待重新綁定';
-                    user.phoneAudited = false;
-                    newValueHtml = getPhoneStatusHtml(user.phone);
-                    
-                    const basicPhoneSpan = document.getElementById('drawer_basic_phone');
-                    if (basicPhoneSpan) basicPhoneSpan.innerHTML = newValueHtml;
-                }
-                
-                if (typeof renderTable === 'function') renderTable();
-            }
-        }
-        
-        // Handle Basic Info tab layout (parent is div)
-        if (btn.parentElement && btn.parentElement.tagName === 'DIV') {
-            const spans = btn.parentElement.querySelectorAll('span');
-            if (spans.length >= 2) {
-                spans[1].innerHTML = newValueHtml;
-            }
-        } 
-        // Handle Audit tab table layout
-        else if (btn.closest('tr')) {
-            const row = btn.closest('tr');
-            const cells = row.querySelectorAll('td');
-            if (cells.length >= 3) {
-                cells[2].innerHTML = newValueHtml;
-            }
-        }
-        
-        btn.remove();
-    }
-}
+
 
 // IP Event Delegation
 document.querySelector('#userTableBody')?.addEventListener('click', function(e) {
@@ -3549,6 +3539,75 @@ window.filterIpRecords = function(val) {
             row.style.display = row.classList.contains('reg-record') ? '' : 'none';
         }
     });
+};
+
+// Global Confirm Modal function
+window.showConfirmModal = function(message, onConfirm) {
+    const modal = document.getElementById('globalConfirmModal');
+    const msgEl = document.getElementById('globalConfirmModalMessage');
+    const btnOk = document.getElementById('btnGlobalConfirmOk');
+    const btnCancel = document.getElementById('btnGlobalConfirmCancel');
+    const btnClose = document.getElementById('btnGlobalConfirmClose');
+    
+    if (!modal) {
+        if (confirm(message)) {
+            if (onConfirm) onConfirm();
+        }
+        return;
+    }
+    
+    msgEl.textContent = message;
+    modal.style.display = 'flex';
+    
+    const close = () => {
+        modal.style.display = 'none';
+        btnOk.onclick = null;
+        btnCancel.onclick = null;
+        if (btnClose) btnClose.onclick = null;
+    };
+    
+    btnOk.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+        if (onConfirm) onConfirm();
+    };
+    
+    btnCancel.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+    };
+    
+    if (btnClose) {
+        btnClose.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            close();
+        };
+    }
+};
+
+window.handleDisableUser = function(uid) {
+    if (window.mockUsers) {
+        const user = window.mockUsers.find(u => u.uid === uid);
+        if (user) {
+            user.status = '停用';
+            if (window.showToast) window.showToast('已停用');
+            if (typeof renderTable === 'function') renderTable();
+        }
+    }
+};
+
+window.handleKickOfflineUser = function(uid) {
+    if (window.mockUsers) {
+        const user = window.mockUsers.find(u => u.uid === uid);
+        if (user) {
+            user.offlineDays = 1;
+            if (window.showToast) window.showToast('已踢下線');
+            if (typeof renderTable === 'function') renderTable();
+        }
+    }
 };
 
 });
