@@ -325,6 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selected = element.querySelector('.select-selected');
         const selectedValSpan = element.querySelector('.selected-val');
         const optionsList = element.querySelector('.select-options');
+        const defaultPlaceholder = element.getAttribute('data-placeholder') || (selectedValSpan ? selectedValSpan.textContent.trim() : '請選擇');
 
         selected.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -376,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (selectedItems.length === 0) {
-                selectedValSpan.textContent = '請選擇';
+                selectedValSpan.textContent = defaultPlaceholder;
             } else if (selectedItems.length === 1) {
                 selectedValSpan.textContent = selectedItems[0];
             } else {
@@ -405,6 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Custom selections state
     let selectedStatusVal = '';
     let selectedLevelVal = '';
+    let selectedVipVal = '';
     let selectedDeviceTypeVal = '';
     let selectedCountryVal = '';
     let selectedBirthdayOuterVal = '';
@@ -441,7 +443,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (typeof dropdownVip !== 'undefined' && dropdownVip) {
-        initMultiSelect(dropdownVip, () => {
+        initSingleSelect(dropdownVip, (val) => {
+            selectedVipVal = val;
         });
     }
 
@@ -1011,15 +1014,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper: Clear multi select choices
     function clearMultiSelectValue(element) {
+        if (!element) return;
         const selectedValSpan = element.querySelector('.selected-val');
         const optionsList = element.querySelector('.select-options');
         
-        optionsList.querySelectorAll('li').forEach(li => {
-            li.classList.remove('selected');
-            const checkbox = li.querySelector('input[type="checkbox"]');
-            if (checkbox) checkbox.checked = false;
-        });
-        selectedValSpan.textContent = '請選擇';
+        if (optionsList) {
+            optionsList.querySelectorAll('li').forEach(li => {
+                li.classList.remove('selected');
+                const checkbox = li.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = false;
+            });
+        }
+        if (selectedValSpan) {
+            const defaultText = element.getAttribute('data-placeholder') || 
+                                (element.id === 'dropdownVip' ? '請選擇用戶等級' : 
+                                 element.id === 'dropdownTagsSearch' ? '請選擇或輸入標籤...' : '請選擇');
+            selectedValSpan.textContent = defaultText;
+        }
     }
 
     // Read form values and update Tags & Badge count
@@ -1046,10 +1057,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof selectedCountryVal !== 'undefined' && selectedCountryVal) {
             tags.push({ key: 'country', label: `國家: ${selectedCountryVal}`, type: 'single-custom', element: dropdownCountry, defaultValue: '', defaultText: '請選擇國家', valueVarSetter: (v) => selectedCountryVal = v });
         }
-        // 3. VIP (Multiple Select)
-        const selectedVips = getMultiSelectValues(dropdownVip);
-        if (selectedVips.length > 0) {
-            tags.push({ key: 'vip', label: `等級: ${selectedVips.join(', ')}`, type: 'multi-custom', element: dropdownVip });
+        // 3. VIP (Single Select)
+        if (typeof selectedVipVal !== 'undefined' && selectedVipVal) {
+            tags.push({ key: 'vip', label: `等級: ${selectedVipVal}`, type: 'single-custom', element: dropdownVip, defaultValue: '', defaultText: '請選擇用戶等級', valueVarSetter: (v) => selectedVipVal = v });
         }
         // 4. Other
         const selectedOthers = getMultiSelectValues(dropdownOther);
@@ -1249,7 +1259,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setSingleSelectValue(dropdownLevel, '', '全部');
         selectedLevelVal = '';
 
-        clearMultiSelectValue(dropdownVip);
+        setSingleSelectValue(dropdownVip, '', '請選擇用戶等級');
+        selectedVipVal = '';
+
         clearMultiSelectValue(dropdownOther);
         clearMultiSelectValue(dropdownTagsSearch);
         
@@ -1760,7 +1772,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderTable() {
         window.renderTable = renderTable;
         if (!userTableBody) return;
-        const selectedVips = getMultiSelectValues(dropdownVip);
         const selectedOthers = getMultiSelectValues(dropdownOther);
         const inputAccount = document.getElementById('inputAccount');
         const accountVal = inputAccount ? inputAccount.value.trim().toLowerCase() : '';
@@ -1797,7 +1808,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filtered = mockUsers.filter(user => {
             if (selectedStatusVal && user.status !== selectedStatusVal) return false;
             if (selectedLevelVal && user.level !== selectedLevelVal) return false;
-            if (selectedVips.length > 0 && !selectedVips.includes(user.vip)) return false;
+            if (selectedVipVal && user.vip !== selectedVipVal) return false;
             if (selectedOthers.length > 0 && !selectedOthers.includes(user.other)) return false;
             
             // Account filter
