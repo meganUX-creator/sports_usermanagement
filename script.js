@@ -203,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper: Close all dropdown menus
     function closeAllDropdowns() {
         document.querySelectorAll('.select-options').forEach(el => el.classList.remove('show'));
+        document.querySelectorAll('.custom-select-single, .custom-select-multi').forEach(el => el.classList.remove('active-open'));
         if (typeof accountTypeMenu !== 'undefined' && accountTypeMenu) accountTypeMenu.classList.remove('show');
         const colToggle = document.getElementById('columnToggleDropdown');
         if (colToggle) colToggle.classList.remove('show');
@@ -305,6 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             closeAllDropdowns();
             if (!isOpen) {
                 optionsList.classList.add('show');
+                element.classList.add('active-open');
             }
         });
 
@@ -314,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 optionsList.querySelectorAll('li').forEach(l => l.classList.remove('active'));
                 li.classList.add('active');
                 selectedValSpan.textContent = li.textContent.trim();
+                selectedValSpan.style.color = '#1e293b';
                 optionsList.classList.remove('show');
                 if (onChange) onChange(li.getAttribute('data-value'));
             });
@@ -325,6 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const selected = element.querySelector('.select-selected');
         const selectedValSpan = element.querySelector('.selected-val');
         const optionsList = element.querySelector('.select-options');
+        const tagsContainer = element.querySelector('.selected-tags-container');
+        const inlineLabel = element.querySelector('.inline-label');
         const defaultPlaceholder = element.getAttribute('data-placeholder') || (selectedValSpan ? selectedValSpan.textContent.trim() : '請選擇');
 
         selected.addEventListener('click', (e) => {
@@ -333,32 +338,69 @@ document.addEventListener('DOMContentLoaded', () => {
             closeAllDropdowns();
             if (!isOpen) {
                 optionsList.classList.add('show');
+                element.classList.add('active-open');
             }
         });
 
-        optionsList.querySelectorAll('li').forEach(li => {
-            if (li.classList.contains('search-input-li')) {
-                // Keep dropdown open when clicking input
-                li.addEventListener('click', (e) => {
-                    e.stopPropagation();
+        // Search in dropdown (exact search support)
+        const searchInputLi = optionsList.querySelector('.search-input-li');
+        if (searchInputLi) {
+            searchInputLi.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            const searchInput = searchInputLi.querySelector('input[type="text"]');
+            const searchBtn = searchInputLi.querySelector('.tag-search-btn');
+            const noMatchLi = optionsList.querySelector('.no-tag-match-li');
+
+            const executeSearch = () => {
+                const query = searchInput ? searchInput.value.trim() : '';
+                let matchCount = 0;
+                optionsList.querySelectorAll('li:not(.search-input-li):not(.no-tag-match-li)').forEach(item => {
+                    if (!query) {
+                        item.style.display = '';
+                        matchCount++;
+                    } else {
+                        const itemVal = (item.getAttribute('data-value') || '').trim();
+                        const itemText = (item.textContent || '').trim();
+                        const isMatch = (itemVal.toLowerCase() === query.toLowerCase()) || (itemText.toLowerCase() === query.toLowerCase());
+                        if (isMatch) {
+                            item.style.display = '';
+                            matchCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }
                 });
-                const searchInput = li.querySelector('input[type="text"]');
-                if (searchInput) {
-                    searchInput.addEventListener('input', (e) => {
-                        const val = e.target.value.trim().toLowerCase();
-                        optionsList.querySelectorAll('li:not(.search-input-li)').forEach(item => {
-                            const text = item.textContent.toLowerCase();
-                            if (text.includes(val)) {
-                                item.style.display = '';
-                            } else {
-                                item.style.display = 'none';
-                            }
-                        });
-                    });
+                if (noMatchLi) {
+                    noMatchLi.style.display = (matchCount === 0) ? 'block' : 'none';
                 }
-                return; // skip standard checkbox logic
+            };
+
+            if (searchBtn) {
+                searchBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    executeSearch();
+                });
             }
 
+            if (searchInput) {
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        executeSearch();
+                    }
+                });
+                searchInput.addEventListener('input', (e) => {
+                    if (e.target.value === '') {
+                        executeSearch();
+                    }
+                });
+            }
+        }
+
+        optionsList.querySelectorAll('li:not(.search-input-li):not(.no-tag-match-li)').forEach(li => {
             li.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const checkbox = li.querySelector('input[type="checkbox"]');
@@ -373,28 +415,80 @@ document.addEventListener('DOMContentLoaded', () => {
         function updateDisplay() {
             const selectedItems = [];
             optionsList.querySelectorAll('li.selected').forEach(li => {
-                selectedItems.push(li.getAttribute('data-value'));
+                selectedItems.push({
+                    value: li.getAttribute('data-value'),
+                    color: li.getAttribute('data-color') || '#0ea5e9',
+                    isWarning: li.getAttribute('data-type') === 'warning',
+                    element: li
+                });
             });
 
-            if (selectedItems.length === 0) {
-                selectedValSpan.textContent = defaultPlaceholder;
-            } else if (selectedItems.length === 1) {
-                selectedValSpan.textContent = selectedItems[0];
-            } else {
-                let displayText = selectedItems[0];
-                let shownCount = 1;
-                for (let i = 1; i < selectedItems.length; i++) {
-                    if ((displayText + "、" + selectedItems[i]).length > 10) {
-                        break;
+            if (tagsContainer) {
+                if (selectedItems.length === 0) {
+                    if (inlineLabel) inlineLabel.style.display = '';
+                    if (selectedValSpan) {
+                        selectedValSpan.style.display = '';
+                        selectedValSpan.textContent = defaultPlaceholder;
+                        selectedValSpan.style.color = '#94a3b8';
                     }
-                    displayText += "、" + selectedItems[i];
-                    shownCount++;
-                }
-                
-                if (shownCount < selectedItems.length) {
-                    selectedValSpan.textContent = `${displayText} + ${selectedItems.length - shownCount}`;
+                    tagsContainer.style.display = 'none';
+                    tagsContainer.innerHTML = '';
                 } else {
-                    selectedValSpan.textContent = displayText;
+                    if (inlineLabel) inlineLabel.style.display = 'none';
+                    if (selectedValSpan) selectedValSpan.style.display = 'none';
+                    tagsContainer.style.display = 'flex';
+                    tagsContainer.innerHTML = '';
+
+                    const maxVisibleCount = 2;
+                    const visibleItems = selectedItems.length > maxVisibleCount 
+                        ? selectedItems.slice(0, maxVisibleCount) 
+                        : selectedItems;
+
+                    visibleItems.forEach(item => {
+                        const badge = document.createElement('span');
+                        badge.className = 'selected-tag-badge';
+                        badge.setAttribute('data-value', item.value);
+                        badge.innerHTML = `
+                            ${item.isWarning ? '<i class="ph-fill ph-warning-circle" style="color: #ea580c; font-size: 13px;"></i>' : `<span class="tag-badge-dot" style="background-color: ${item.color};"></span>`}
+                            <span class="tag-badge-text">${item.value}</span>
+                            <span class="tag-badge-divider"></span>
+                            <i class="ph ph-x tag-badge-remove" title="移除"></i>
+                        `;
+                        const removeIcon = badge.querySelector('.tag-badge-remove');
+                        removeIcon.addEventListener('click', (ev) => {
+                            ev.stopPropagation();
+                            item.element.classList.remove('selected');
+                            const cb = item.element.querySelector('input[type="checkbox"]');
+                            if (cb) cb.checked = false;
+                            updateDisplay();
+                            if (onChange) onChange();
+                            updateFilters();
+                            renderTable();
+                        });
+                        tagsContainer.appendChild(badge);
+                    });
+
+                    if (selectedItems.length > maxVisibleCount) {
+                        const remainingCount = selectedItems.length - maxVisibleCount;
+                        const countBadge = document.createElement('span');
+                        countBadge.className = 'selected-tag-badge tag-badge-count';
+                        countBadge.textContent = `+${remainingCount}`;
+                        countBadge.title = `已選標籤 (${selectedItems.length}): ${selectedItems.map(it => it.value).join('、')}`;
+                        tagsContainer.appendChild(countBadge);
+                    }
+                }
+            } else if (selectedValSpan) {
+                if (selectedItems.length === 0) {
+                    selectedValSpan.textContent = defaultPlaceholder;
+                    selectedValSpan.style.color = '#94a3b8';
+                } else if (selectedItems.length <= 3) {
+                    selectedValSpan.textContent = selectedItems.map(it => it.value).join('、');
+                    selectedValSpan.style.color = '#1e293b';
+                } else {
+                    const firstThree = selectedItems.slice(0, 3).map(it => it.value).join('、');
+                    const remainingCount = selectedItems.length - 3;
+                    selectedValSpan.textContent = `${firstThree} +${remainingCount}`;
+                    selectedValSpan.style.color = '#1e293b';
                 }
             }
         }
@@ -581,7 +675,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return `<span class="status-bound"><span class="data-masked">${val}</span></span>`;
         }
         if (type === 'longText') {
-            return `<span class="text-truncate" title="${val}">${val}</span>`;
+            return `
+            <div class="text-truncate-container">
+                <span class="text-truncate-2lines">${val}</span>
+                <div class="text-tooltip">${val}</div>
+            </div>`;
         }
         if (type === 'copyable') {
             return `<span class="copyable-text" onclick="alert('已複製：' + '${val}')" title="點擊複製">${val}<i class="ph-bold ph-copy copy-icon"></i></span>`;
@@ -653,18 +751,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const dotColor = isOnline ? '#10b981' : '#9ca3af';
             
             const statusBadge = `
-                <div style="display: inline-flex; align-items: center; gap: 4px; background: ${badgeBg}; padding: 2px 8px; border-radius: 12px;">
+                <div class="status-badge-view" style="display: flex; align-items: center; justify-content: center; gap: 4px; background: ${badgeBg}; border-radius: 13px; width: 68px; height: 26px;">
                     <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${dotColor};"></span>
                     <span style="color: ${badgeColor}; font-size: 12px; font-weight: 500;">${isOnline ? '在线' : '离线'}</span>
                 </div>
             `;
             
-            let buttonsHtml = `<div style="display: flex; align-items: center; justify-content: flex-start; gap: 6px;">${statusBadge}`;
-            if (!isDisabled) {
-                buttonsHtml += `<a href="#" class="op-link btn-action-disable" style="font-size: 12px; padding: 4px 8px; background: #ef4444; color: white; border-radius: 4px; text-decoration: none;" onclick="window.showConfirmModal('確定要停用此會員嗎？', function(){ window.handleDisableUser('${user.uid}'); }); return false;">停用</a>`;
-            }
+            let buttonsHtml = `<div style="display: flex; align-items: center; justify-content: flex-start; gap: 6px;">`;
             if (isOnline) {
-                buttonsHtml += `<a href="#" class="op-link btn-action-kick" style="font-size: 12px; padding: 4px 8px; background: #f59e0b; color: white; border-radius: 4px; text-decoration: none;" onclick="window.showConfirmModal('確定要將此會員踢下線嗎？', function(){ window.handleKickOfflineUser('${user.uid}'); }); return false;">踢下线</a>`;
+                buttonsHtml += `
+                <div class="online-hover-container">
+                    ${statusBadge}
+                    <a href="#" class="op-link btn-action-kick hover-btn" style="display: flex; align-items: center; justify-content: center; background: #f97316; color: white; border-radius: 4px; text-decoration: none; font-size: 12px;" onclick="window.showConfirmModal('确定要将此会员踢下线吗？', function(){ window.handleKickOfflineUser('${user.uid}', '${user.account}'); }); return false;">踢下线</a>
+                </div>`;
+            } else {
+                buttonsHtml += `<div style="width: 68px; height: 26px;">${statusBadge}</div>`;
+            }
+
+            if (!isDisabled) {
+                buttonsHtml += `<a href="#" class="op-link btn-action-disable" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 26px; font-size: 12px; background: #ef4444; color: white; border-radius: 4px; text-decoration: none;" onclick="window.showConfirmModal('确定要停用此会员吗？', function(){ window.handleDisableUser('${user.uid}', '${user.account}'); }); return false;">停用</a>`;
             }
             buttonsHtml += `</div>`;
             return `<td data-col="online">${buttonsHtml}</td>`;
@@ -821,8 +926,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'offlineDays', group: '日期信息', label: '离开天数', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="offlineDays">${user.offlineDays !== undefined ? user.offlineDays : 0}天</td>` },
         { id: 'ip', group: '日期信息', label: '当前登录IP', checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="ip"><div class="ip-row" style="display: flex; align-items: center; gap: 4px;">${hasPerm(17) ? renderDataState(user.ip || '54.150.111.152', 'ip') : window.maskIp(user.ip)}</div></td>` },
         { id: 'regIp', group: '日期信息', label: '注册 IP', checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="regIp"><div class="ip-row" style="display: flex; align-items: center; gap: 4px;">${hasPerm(17) ? renderDataState(user.regIp || '54.150.111.152', 'ip') : window.maskIp(user.regIp)}</div></td>` },
-        { id: 'remark', group: '备注', label: '备注', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="remark">${user.remark}</td>` },
-        { id: 'followRemark', group: '备注', label: '回访备注', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="followRemark">${user.followRemark}</td>` },
+        { id: 'remark', group: '备注', label: '备注', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="remark" style="max-width: 200px; vertical-align: middle;">${renderDataState(user.remark, 'longText')}</td>` },
+        { id: 'followRemark', group: '备注', label: '回访备注', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="followRemark" style="max-width: 200px; vertical-align: middle;">${renderDataState(user.followRemark, 'longText')}</td>` },
         { id: 'action', group: '操作', label: '操作', render: (user) => {
             return `<td class="sticky-col-right" data-col="action" style="overflow:visible;text-align:center;vertical-align:middle;">
                 <div class="compact-action-container" style="display:inline-flex;align-items:center;justify-content:center;">
@@ -916,16 +1021,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Comprehensive Mock Users Database (50 Users for pagination demonstration)
     const baseMockUsers = [
-        { uid: "1239361225", account: "mingv0717001", realName: "李小明", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "末綁定", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["VIP 客戶", "高頻交易", "大戶", "標籤四", "標籤五", "標籤六"], status: "正常", date: "2023-01-01 12:00:00", lastLogin: "2023-01-10 15:30:00", offlineDays: 9, ip: "192.168.1.1", remark: "-", followRemark: "-", note: "-", deviceType: "iOS" },
-        { uid: "1239361224", account: "albertvn021", realName: "黃大維", nickname: "阿布", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "未驗證", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "06077790", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["異常風險", "VIP 客戶", "標籤三", "標籤四", "標籤五"], status: "停用", date: "2023-01-02 10:00:00", lastLogin: "2023-01-11 09:20:00", offlineDays: 9, ip: "192.168.1.2", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
-        { uid: "1239361223", account: "vip_king", realName: "李娜", realNameAudited: true, birthdayAudited: true, nickname: "鄭姐", agentId: "AG888", inviter: "nnest123556", registerMode: "一般註冊", phone: "13812348888", payLevel: "默認層", growth: 1250, level: "鑽石會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "INV02", directTeam: "12/8", vipLevel: 3, vipGrowth: 6800, creditValue: 500, availableCredit: 2000, commissionBal: 680, balanceBuy: 8750, arrears: "0", interest: 120, thirdBal: 320, points: 450, deposit: 3200, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 8, withdrawCount: 4, tags: ["正常", "活躍", "高消費", "標籤四", "標籤五"], status: "正常", date: "2023-01-05 14:15:00", lastLogin: "2023-01-15 18:45:00", offlineDays: 0, ip: "192.168.1.3", remark: "-", followRemark: "-", note: "-", deviceType: "PC" },
-        { uid: "1239361226", account: "test_user_1", realName: "王大明", nickname: "王大", agentId: "dl", inviter: "nnest123556", registerMode: "後台新增", phone: "0912345678", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE100", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 500, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "0", interest: 0, thirdBal: 150, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["新註冊"], status: "停用", date: "2023-02-01 10:00:00", lastLogin: "2023-03-01 15:30:00", offlineDays: 30, ip: "192.168.2.10", remark: "大戶需關注", followRemark: "-", note: "-", deviceType: "H5" },
-        { uid: "1239361227", account: "test_user_2", realName: "林小華", nickname: "", agentId: "AG888", inviter: "-", registerMode: "一般註冊", phone: "0987654321", payLevel: "默認層", growth: 150, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "1/1", vipLevel: 1, vipGrowth: 50, creditValue: 0, availableCredit: 1000, commissionBal: 15, balanceBuy: 300, arrears: "0", interest: 2, thirdBal: 0, points: 25, deposit: 2000, withdraw: 500, withdrawPre: "-", adminDeduct: "-", depositCount: 1, withdrawCount: 1, tags: ["新註冊"], status: "停用", date: "2023-02-02 10:00:00", lastLogin: "2023-03-02 15:30:00", offlineDays: 1, ip: "192.168.1.100", remark: "-", followRemark: "-", note: "-", deviceType: null },
-        { uid: "1239361228", account: "test_user_3", realName: "周思齊", nickname: "Alice", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "13912341002", payLevel: "默認層", growth: 300, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE102", directTeam: "2/2", vipLevel: 2, vipGrowth: 100, creditValue: 500, availableCredit: 2000, commissionBal: 30, balanceBuy: 600, arrears: "0", interest: 4, thirdBal: 0, points: 50, deposit: 4000, withdraw: 1000, withdrawPre: "-", adminDeduct: "-", depositCount: 2, withdrawCount: 2, tags: ["新註冊"], status: "正常", date: "2023-02-03 10:00:00", lastLogin: "2023-03-03 15:30:00", offlineDays: 2, ip: "192.168.2.12", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
-        { uid: "1239361229", account: "test_user_4", realName: "陳大文", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "未綁定", payLevel: "默認層", growth: 450, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "3/0", vipLevel: 3, vipGrowth: 150, creditValue: 0, availableCredit: 3000, commissionBal: 45, balanceBuy: 900, arrears: "0", interest: 6, thirdBal: 0, points: 75, deposit: 6000, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 3, withdrawCount: 3, tags: ["新註冊"], status: "冻结", date: "2023-02-04 10:00:00", lastLogin: "2023-03-04 15:30:00", offlineDays: 3, ip: "192.168.2.13", remark: "這是一段非常長非常長非常長的備註，用來測試單行截斷與懸停提示的效果是否正常運作。", followRemark: "-", note: "-", deviceType: "" },
-        { uid: "1239361230", account: "test_user_5", realName: "許大茂", nickname: "小明", agentId: "AG888", inviter: "nnest123556", registerMode: "後台新增", phone: "13912341004", payLevel: "默認層", growth: 600, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE104", directTeam: "4/1", vipLevel: 0, vipGrowth: 200, creditValue: 500, availableCredit: 4000, commissionBal: 60, balanceBuy: 1200, arrears: "0", interest: 8, thirdBal: 150, points: 100, deposit: 8000, withdraw: 2000, withdrawPre: "-", adminDeduct: "-", depositCount: 4, withdrawCount: 4, tags: ["新註冊"], status: "冻结", date: "2023-02-05 10:00:00", lastLogin: "2023-03-05 15:30:00", offlineDays: 4, ip: "192.168.2.14", remark: "-", followRemark: "-", note: "-" },
-        { uid: "1239361231", account: "test_user_6", realName: "陳阿明", nickname: "", agentId: "ag123", inviter: "-", registerMode: "一般註冊", phone: "待重新綁定", payLevel: "默認層", growth: 750, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/2", vipLevel: 1, vipGrowth: 250, creditValue: 0, availableCredit: 5000, commissionBal: 75, balanceBuy: 1500, arrears: "0", interest: 10, thirdBal: 0, points: 125, deposit: 10000, withdraw: 2500, withdrawPre: "-", adminDeduct: "-", depositCount: 5, withdrawCount: 5, tags: ["正常", "活躍"], status: "正常", date: "2023-02-06 10:00:00", lastLogin: "2023-03-06 15:30:00", offlineDays: 5, ip: "192.168.2.15", remark: "-", followRemark: "-", note: "-" },
-        { uid: "1239361232", account: "test_user_7", realName: "陳大文", nickname: "SuperAdmin", agentId: "dl", inviter: "nnest123556", registerMode: "一般註冊", phone: "審核中", payLevel: "默認層", growth: 900, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE106", directTeam: "1/0", vipLevel: 2, vipGrowth: 300, creditValue: 500, availableCredit: 6000, commissionBal: 90, balanceBuy: 1800, arrears: "0", interest: 12, thirdBal: 0, points: 150, deposit: 12000, withdraw: 3000, withdrawPre: "-", adminDeduct: "-", depositCount: 6, withdrawCount: 0, tags: ["新註冊"], status: "冻结", date: "2023-02-07 10:00:00", lastLogin: "2023-03-07 15:30:00", offlineDays: 6, ip: "192.168.2.16", remark: "-", followRemark: "-", note: "-" }
+        { uid: "1239361225", account: "mingv0717001", realName: "李小明", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "末綁定", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["高價值", "活躍", "VIP"], status: "正常", date: "2023-01-01 12:00:00", lastLogin: "2023-01-10 15:30:00", offlineDays: 9, ip: "192.168.1.1", remark: "-", followRemark: "-", note: "-", deviceType: "iOS" },
+        { uid: "1239361224", account: "albertvn021", realName: "黃大維", nickname: "阿布", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "未驗證", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "06077790", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["異常風險", "風險", "沉睡"], status: "停用", date: "2023-01-02 10:00:00", lastLogin: "2023-01-11 09:20:00", offlineDays: 9, ip: "192.168.1.2", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
+        { uid: "1239361223", account: "vip_king", realName: "李娜", realNameAudited: true, birthdayAudited: true, nickname: "鄭姐", agentId: "AG888", inviter: "nnest123556", registerMode: "一般註冊", phone: "13812348888", payLevel: "默認層", growth: 1250, level: "鑽石會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "INV02", directTeam: "12/8", vipLevel: 3, vipGrowth: 6800, creditValue: 500, availableCredit: 2000, commissionBal: 680, balanceBuy: 8750, arrears: "0", interest: 120, thirdBal: 320, points: 450, deposit: 3200, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 8, withdrawCount: 4, tags: ["風險", "活躍"], status: "正常", date: "2023-01-05 14:15:00", lastLogin: "2023-01-15 18:45:00", offlineDays: 0, ip: "192.168.1.3", remark: "-", followRemark: "-", note: "-", deviceType: "PC" },
+        { uid: "1239361226", account: "test_user_1", realName: "王大明", nickname: "王大", agentId: "dl", inviter: "nnest123556", registerMode: "後台新增", phone: "0912345678", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE100", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 500, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "0", interest: 0, thirdBal: 150, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["新手", "高價值"], status: "停用", date: "2023-02-01 10:00:00", lastLogin: "2023-03-01 15:30:00", offlineDays: 30, ip: "192.168.2.10", remark: "大戶需關注", followRemark: "-", note: "-", deviceType: "H5" },
+        { uid: "1239361227", account: "test_user_2", realName: "林小華", nickname: "", agentId: "AG888", inviter: "-", registerMode: "一般註冊", phone: "0987654321", payLevel: "默認層", growth: 150, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "1/1", vipLevel: 1, vipGrowth: 50, creditValue: 0, availableCredit: 1000, commissionBal: 15, balanceBuy: 300, arrears: "0", interest: 2, thirdBal: 0, points: 25, deposit: 2000, withdraw: 500, withdrawPre: "-", adminDeduct: "-", depositCount: 1, withdrawCount: 1, tags: ["沉睡", "新手"], status: "停用", date: "2023-02-02 10:00:00", lastLogin: "2023-03-02 15:30:00", offlineDays: 1, ip: "192.168.1.100", remark: "-", followRemark: "-", note: "-", deviceType: null },
+        { uid: "1239361228", account: "test_user_3", realName: "周思齊", nickname: "Alice", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "13912341002", payLevel: "默認層", growth: 300, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE102", directTeam: "2/2", vipLevel: 2, vipGrowth: 100, creditValue: 500, availableCredit: 2000, commissionBal: 30, balanceBuy: 600, arrears: "0", interest: 4, thirdBal: 0, points: 50, deposit: 4000, withdraw: 1000, withdrawPre: "-", adminDeduct: "-", depositCount: 2, withdrawCount: 2, tags: ["活躍", "高價值"], status: "正常", date: "2023-02-03 10:00:00", lastLogin: "2023-03-03 15:30:00", offlineDays: 2, ip: "192.168.2.12", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
+        { uid: "1239361229", account: "test_user_4", realName: "陳大文", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "未綁定", payLevel: "默認層", growth: 450, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "3/0", vipLevel: 3, vipGrowth: 150, creditValue: 0, availableCredit: 3000, commissionBal: 45, balanceBuy: 900, arrears: "0", interest: 6, thirdBal: 0, points: 75, deposit: 6000, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 3, withdrawCount: 3, tags: ["沉睡"], status: "冻结", date: "2023-02-04 10:00:00", lastLogin: "2023-03-04 15:30:00", offlineDays: 3, ip: "192.168.2.13", remark: "這是一段非常長非常長非常長的備註，用來測試單行截斷與懸停提示的效果是否正常運作。", followRemark: "-", note: "-", deviceType: "" },
+        { uid: "1239361230", account: "test_user_5", realName: "許大茂", nickname: "小明", agentId: "AG888", inviter: "nnest123556", registerMode: "後台新增", phone: "13912341004", payLevel: "默認層", growth: 600, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE104", directTeam: "4/1", vipLevel: 0, vipGrowth: 200, creditValue: 500, availableCredit: 4000, commissionBal: 60, balanceBuy: 1200, arrears: "0", interest: 8, thirdBal: 150, points: 100, deposit: 8000, withdraw: 2000, withdrawPre: "-", adminDeduct: "-", depositCount: 4, withdrawCount: 4, tags: ["異常風險"], status: "冻结", date: "2023-02-05 10:00:00", lastLogin: "2023-03-05 15:30:00", offlineDays: 4, ip: "192.168.2.14", remark: "-", followRemark: "-", note: "-" },
+        { uid: "1239361231", account: "test_user_6", realName: "陳阿明", nickname: "", agentId: "ag123", inviter: "-", registerMode: "一般註冊", phone: "待重新綁定", payLevel: "默認層", growth: 750, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/2", vipLevel: 1, vipGrowth: 250, creditValue: 0, availableCredit: 5000, commissionBal: 75, balanceBuy: 1500, arrears: "0", interest: 10, thirdBal: 0, points: 125, deposit: 10000, withdraw: 2500, withdrawPre: "-", adminDeduct: "-", depositCount: 5, withdrawCount: 5, tags: ["活躍", "VIP"], status: "正常", date: "2023-02-06 10:00:00", lastLogin: "2023-03-06 15:30:00", offlineDays: 5, ip: "192.168.2.15", remark: "-", followRemark: "-", note: "-" },
+        { uid: "1239361232", account: "test_user_7", realName: "陳大文", nickname: "SuperAdmin", agentId: "dl", inviter: "nnest123556", registerMode: "一般註冊", phone: "審核中", payLevel: "默認層", growth: 900, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE106", directTeam: "1/0", vipLevel: 2, vipGrowth: 300, creditValue: 500, availableCredit: 6000, commissionBal: 90, balanceBuy: 1800, arrears: "0", interest: 12, thirdBal: 0, points: 150, deposit: 12000, withdraw: 3000, withdrawPre: "-", adminDeduct: "-", depositCount: 6, withdrawCount: 0, tags: ["新手"], status: "冻结", date: "2023-02-07 10:00:00", lastLogin: "2023-03-07 15:30:00", offlineDays: 6, ip: "192.168.2.16", remark: "-", followRemark: "-", note: "-" }
     ];
 
     // Generate 200 items to ensure pagination works smoothly with up to 100 items per page
@@ -1010,6 +1115,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         selectedValSpan.textContent = text;
+        if (val === '') {
+            selectedValSpan.style.color = '#94a3b8';
+        } else {
+            selectedValSpan.style.color = '#1e293b';
+        }
     }
 
     // Helper: Clear multi select choices
@@ -1017,19 +1127,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!element) return;
         const selectedValSpan = element.querySelector('.selected-val');
         const optionsList = element.querySelector('.select-options');
+        const tagsContainer = element.querySelector('.selected-tags-container');
+        const inlineLabel = element.querySelector('.inline-label');
+        const searchInput = element.querySelector('.search-input-li input[type="text"]');
+        const noMatchLi = element.querySelector('.no-tag-match-li');
         
         if (optionsList) {
             optionsList.querySelectorAll('li').forEach(li => {
                 li.classList.remove('selected');
                 const checkbox = li.querySelector('input[type="checkbox"]');
                 if (checkbox) checkbox.checked = false;
+                if (!li.classList.contains('no-tag-match-li')) {
+                    li.style.display = '';
+                }
             });
+            if (noMatchLi) noMatchLi.style.display = 'none';
+        }
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        if (tagsContainer) {
+            tagsContainer.style.display = 'none';
+            tagsContainer.innerHTML = '';
+        }
+        if (inlineLabel) {
+            inlineLabel.style.display = '';
         }
         if (selectedValSpan) {
+            selectedValSpan.style.display = '';
             const defaultText = element.getAttribute('data-placeholder') || 
                                 (element.id === 'dropdownVip' ? '請選擇用戶等級' : 
                                  element.id === 'dropdownTagsSearch' ? '請選擇或輸入標籤...' : '請選擇');
             selectedValSpan.textContent = defaultText;
+            if (element.id === 'dropdownTagsSearch') {
+                selectedValSpan.style.color = '#94a3b8';
+            }
         }
     }
 
@@ -1773,6 +1905,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.renderTable = renderTable;
         if (!userTableBody) return;
         const selectedOthers = getMultiSelectValues(dropdownOther);
+        const selectedTags = getMultiSelectValues(dropdownTagsSearch);
         const inputAccount = document.getElementById('inputAccount');
         const accountVal = inputAccount ? inputAccount.value.trim().toLowerCase() : '';
 
@@ -1810,6 +1943,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedLevelVal && user.level !== selectedLevelVal) return false;
             if (selectedVipVal && user.vip !== selectedVipVal) return false;
             if (selectedOthers.length > 0 && !selectedOthers.includes(user.other)) return false;
+            if (selectedTags.length > 0 && (!user.tags || !selectedTags.some(tag => user.tags.includes(tag)))) return false;
             
             // Account filter
             if (accountVal) {
@@ -1920,6 +2054,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render Table Headers according to Table Mode
         if (userTableHeader) {
+            userTableHeader.style.display = '';
             if (currentTableMode === 'nested') {
                 let nestedHeaderHtml = `<th width="40" style="text-align: center;"><input type="checkbox" id="selectAllCheckbox"></th>`;
                 nestedColumnsConfig.forEach(col => {
@@ -2078,7 +2213,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.renderTableTimeout = setTimeout(() => {
             userTableBody.innerHTML = '';
             if (pagedUsers.length === 0) {
-                userTableBody.innerHTML = `<tr><td colspan="${colspanForLoading}" style="text-align: center; color: var(--text-muted); padding: 32px 0;">無符合篩選條件的會員資料</td></tr>`;
+                if (userTableHeader) userTableHeader.style.display = 'none';
+                const colspanForLoading = currentTableMode === 'nested' ? Object.keys(nestedColumnVisibility).length + 2 : compactColumnsConfig.length + 1;
+                userTableBody.innerHTML = `<tr><td colspan="${colspanForLoading}" style="text-align: center; color: var(--text-muted); padding: 64px 0;">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="ph ph-folder-open" style="font-size: 48px; color: #cbd5e1;"></i>
+                        <span style="font-size: 14px; color: #94a3b8;">查询结果无数据</span>
+                    </div>
+                </td></tr>`;
                 applyColumnVisibility();
                 return;
             }
@@ -2101,23 +2243,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dotColor = isOnline ? '#10b981' : '#9ca3af';
                     
                     const statusBadge = `
-                        <div style="display: inline-flex; align-items: center; gap: 4px; background: ${badgeBg}; padding: 2px 10px; border-radius: 12px;">
+                        <div class="status-badge-view" style="display: flex; align-items: center; justify-content: center; gap: 4px; background: ${badgeBg}; border-radius: 13px; width: 68px; height: 26px;">
                             <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${dotColor};"></span>
                             <span style="color: ${badgeColor}; font-size: 12px; font-weight: 500;">${isOnline ? '在线' : '离线'}</span>
                         </div>
                     `;
                     
                     let actionsHtml = '';
-                    if (!isDisabled) {
-                        actionsHtml += `<a href="#" class="op-link btn-action-disable" style="font-size: 12px; padding: 4px 12px; background: #ef4444; color: white; border-radius: 4px; text-decoration: none; text-align: center;" onclick="window.showConfirmModal('確定要停用此會員嗎？', function(){ window.handleDisableUser('${user.uid}'); }); return false;">停用</a>`;
-                    }
                     if (isOnline) {
-                        actionsHtml += `<a href="#" class="op-link btn-action-kick" style="font-size: 12px; padding: 4px 12px; background: #f59e0b; color: white; border-radius: 4px; text-decoration: none; text-align: center;" onclick="window.showConfirmModal('確定要將此會員踢下線嗎？', function(){ window.handleKickOfflineUser('${user.uid}'); }); return false;">踢下线</a>`;
+                        actionsHtml += `
+                        <div class="online-hover-container">
+                            ${statusBadge}
+                            <a href="#" class="op-link btn-action-kick hover-btn" style="display: flex; align-items: center; justify-content: center; background: #f97316; color: white; border-radius: 4px; text-decoration: none; font-size: 12px;" onclick="window.showConfirmModal('确定要将此会员踢下线吗？', function(){ window.handleKickOfflineUser('${user.uid}', '${user.account}'); }); return false;">踢下线</a>
+                        </div>`;
+                    } else {
+                        actionsHtml += `<div style="width: 68px; height: 26px;">${statusBadge}</div>`;
+                    }
+
+                    if (!isDisabled) {
+                        actionsHtml += `<a href="#" class="op-link btn-action-disable" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 26px; font-size: 12px; background: #ef4444; color: white; border-radius: 4px; text-decoration: none;" onclick="window.showConfirmModal('确定要停用此会员吗？', function(){ window.handleDisableUser('${user.uid}', '${user.account}'); }); return false;">停用</a>`;
                     }
                     
                     nestedRowHtml += `<td style="text-align: center;">
                         <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
-                            ${statusBadge}
                             ${actionsHtml}
                         </div>
                     </td>`;
@@ -3599,23 +3747,25 @@ window.showConfirmModal = function(message, onConfirm) {
     }
 };
 
-window.handleDisableUser = function(uid) {
+window.handleDisableUser = function(uid, accountName) {
     if (window.mockUsers) {
         const user = window.mockUsers.find(u => u.uid === uid);
         if (user) {
             user.status = '停用';
-            if (window.showToast) window.showToast('已停用');
+            const acc = accountName || user.account;
+            if (window.showToast) window.showToast(`提示已 ${acc} 账号停用`);
             if (typeof renderTable === 'function') renderTable();
         }
     }
 };
 
-window.handleKickOfflineUser = function(uid) {
+window.handleKickOfflineUser = function(uid, accountName) {
     if (window.mockUsers) {
         const user = window.mockUsers.find(u => u.uid === uid);
         if (user) {
             user.offlineDays = 1;
-            if (window.showToast) window.showToast('已踢下線');
+            const acc = accountName || user.account;
+            if (window.showToast) window.showToast(`提示已 ${acc} 账号踢下线`);
             if (typeof renderTable === 'function') renderTable();
         }
     }

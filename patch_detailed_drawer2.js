@@ -95,3 +95,4 @@ const newFunc = `window.openDetailedContentDrawer = function(e, type) {
 content = content.replace(/window\.openDetailedContentDrawer = function[\s\S]*?<\/[tT]able>\\n        `;\n    };/m, newFunc);
 
 fs.writeFileSync('script.js', content, 'utf8');
+ㄕ

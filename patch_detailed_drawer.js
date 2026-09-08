@@ -32,7 +32,7 @@ const detailedDrawerJs = `
                             <td style="padding: 16px;">\${u}</td>
                             <td style="padding: 16px; font-family: monospace;">2026-07-28<br>\${String(16 - i).padStart(2, '0')}:\${String(30 - i*2).padStart(2, '0')}:\${String(42 + i*3).padStart(2, '0')}</td>
                             <td style="padding: 16px; font-family: monospace; color: #475569;">54.150.111.152 <i class="ph ph-copy" style="color: #94a3b8; cursor: pointer;"></i></td>
-                            <td style="padding: 16px; color: #64748b;"><i class="ph-fill ph-map-pin"></i> Japan, Tokyo,<br>Tokyo</td>
+                            <td style="padding: 16px; color: #fcfcfcff;"><i class="ph-fill ph-map-pin"></i> Japan, Tokyo,<br>Tokyo</td>
                         </tr>
                     \`).join('')}
                 </tbody>

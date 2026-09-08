@@ -157,21 +157,28 @@
                     </div>
 
                     <div class="form-group" data-filter-id="tagsSearch">
-                        <div class="custom-select-multi" id="dropdownTagsSearch">
+                        <div class="custom-select-multi" id="dropdownTagsSearch" data-placeholder="請選擇或輸入標籤...">
                             <div class="select-selected">
                                 <span class="inline-label">標籤：</span>
                                 <span class="selected-val" style="color: #94a3b8;">請選擇或輸入標籤...</span>
+                                <div class="selected-tags-container" style="display: none;"></div>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li class="search-input-li" style="padding: 8px; background: #fff; position: sticky; top: 0; border-bottom: 1px solid var(--border-color); z-index: 10;">
-                                    <input type="text" placeholder="輸入標籤搜尋..." style="width: 100%; padding: 6px 8px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; font-size: 13px;">
+                                <li class="search-input-li" style="padding: 8px 10px; background: #fff; position: sticky; top: 0; border-bottom: 1px solid var(--border-color); z-index: 10; display: flex; gap: 8px; align-items: center;">
+                                    <input type="text" placeholder="輸入完整標籤名稱..." style="flex: 1; padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; outline: none; font-size: 13px;">
+                                    <button type="button" class="tag-search-btn">
+                                        <i class="ph ph-magnifying-glass"></i> 搜尋
+                                    </button>
                                 </li>
-                                <li data-value="高價值"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#eab308;"></span>高價值</span></li>
-                                <li data-value="風險"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444;"></span>風險</span></li>
-                                <li data-value="活躍"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e;"></span>活躍</span></li>
-                                <li data-value="沉睡"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#94a3b8;"></span>沉睡</span></li>
-                                <li data-value="異常風險"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px; color: #ea580c; font-weight: 500;"><i class="ph-fill ph-warning-circle" style="font-size: 14px;"></i>異常風險</span></li>
+                                <li data-value="高價值" data-color="#eab308"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#eab308;"></span>高價值</span></li>
+                                <li data-value="風險" data-color="#ef4444"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444;"></span>風險</span></li>
+                                <li data-value="活躍" data-color="#0ea5e9"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#0ea5e9;"></span>活躍</span></li>
+                                <li data-value="沉睡" data-color="#94a3b8"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#94a3b8;"></span>沉睡</span></li>
+                                <li data-value="異常風險" data-color="#ea580c" data-type="warning"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px; color: #ea580c; font-weight: 500;"><i class="ph-fill ph-warning-circle" style="font-size: 14px;"></i>異常風險</span></li>
+                                <li data-value="VIP" data-color="#a855f7"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#a855f7;"></span>VIP</span></li>
+                                <li data-value="新手" data-color="#22c55e"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e;"></span>新手</span></li>
+                                <li class="no-tag-match-li" style="display: none; padding: 12px; text-align: center; color: #94a3b8; font-size: 13px; cursor: default;">無匹配標籤</li>
                             </ul>
                         </div>
                     </div>

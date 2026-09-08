@@ -54,11 +54,11 @@
                     <div class="form-group" data-filter-id="status">
                         <div class="custom-select-single" id="dropdownStatus">
                             <div class="select-selected">
-                                <span class="selected-val">全部狀態</span>
+                                <span class="selected-val" style="color: #94a3b8;">请选择状态</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="" class="active">全部狀態</li>
+                                <li data-value="" class="active">请选择状态</li>
                                 <li data-value="正常">正常</li>
                                 <li data-value="冻结">冻结</li>
                                 <li data-value="停用">停用</li>
@@ -69,14 +69,14 @@
                     <div class="form-group" data-filter-id="level">
                         <div class="custom-select-single" id="dropdownLevel">
                             <div class="select-selected">
-                                <span class="selected-val">所有用戶層級</span>
+                                <span class="selected-val" style="color: #94a3b8;">请选择用户层级</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="" class="active">所有用戶層級</li>
-                                <li data-value="普通會員">普通會員</li>
-                                <li data-value="VIP會員">VIP會員</li>
-                                <li data-value="黃金會員">黃金會員</li>
+                                <li data-value="" class="active">请选择用户层级</li>
+                                <li data-value="普通会员">普通会员</li>
+                                <li data-value="VIP会员">VIP会员</li>
+                                <li data-value="黄金会员">黄金会员</li>
                             </ul>
                         </div>
                     </div>
@@ -84,11 +84,11 @@
                     <div class="form-group" data-filter-id="vip">
                         <div class="custom-select-single" id="dropdownVip">
                             <div class="select-selected">
-                                <span class="selected-val">請選擇用戶等級</span>
+                                <span class="selected-val" style="color: #94a3b8;">请选择用户等级</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="" class="active">請選擇用戶等級</li>
+                                <li data-value="" class="active">请选择用户等级</li>
                                 <li data-value="普通会员">普通会员</li>
                                 <li data-value="白银会员">白银会员</li>
                                 <li data-value="黄金会员">黄金会员</li>
@@ -101,15 +101,14 @@
                     </div>
 
                     <div class="form-group" data-filter-id="other">
-                        <div class="custom-select-multi" id="dropdownOther">
+                        <div class="custom-select-multi" id="dropdownOther" data-placeholder="请选择排除条件">
                             <div class="select-selected">
-                                <span class="inline-label">排除條件：</span>
-                                <span class="selected-val">測試帳號</span>
+                                <span class="selected-val" style="color: #94a3b8;">请选择排除条件</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="測試帳號" class="selected"><input type="checkbox" checked>
-                                    <span>測試帳號</span>
+                                <li data-value="测试账号"><input type="checkbox">
+                                    <span>测试账号</span>
                                 </li>
                                 <li data-value="未充值玩家"><input type="checkbox"> <span>未充值玩家</span></li>
                             </ul>
@@ -119,11 +118,11 @@
                     <div class="form-group" data-filter-id="deviceType">
                         <div class="custom-select-single" id="dropdownDeviceType">
                             <div class="select-selected">
-                                <span class="selected-val">設備類型</span>
+                                <span class="selected-val" style="color: #94a3b8;">请选择设备类型</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="" class="active">全部設備類型</li>
+                                <li data-value="" class="active">请选择设备类型</li>
                                 <li data-value="PC">PC</li>
                                 <li data-value="H5">H5</li>
                                 <li data-value="Android">Android</li>
@@ -135,19 +134,19 @@
                     <div class="form-group" data-filter-id="country">
                         <div class="custom-select-single" id="dropdownCountry">
                             <div class="select-selected">
-                                <span class="selected-val">請選擇國家</span>
+                                <span class="selected-val" style="color: #94a3b8;">请选择国家</span>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="" class="active">所有國家</li>
-                                <li data-value="菲律賓">菲律賓</li>
+                                <li data-value="" class="active">请选择国家</li>
+                                <li data-value="菲律宾">菲律宾</li>
                                 <li data-value="亚洲">亚洲</li>
                                 <li data-value="日本">日本</li>
                                 <li data-value="越南">越南</li>
                                 <li data-value="印尼">印尼</li>
                                 <li data-value="泰国">泰国</li>
                                 <li data-value="韩国">韩国</li>
-                                <li data-value="美國">美國</li>
+                                <li data-value="美国">美国</li>
                                 <li data-value="巴西">巴西</li>
                                 <li data-value="马来西亚">马来西亚</li>
                                 <li data-value="孟加拉">孟加拉</li>
@@ -157,42 +156,48 @@
                     </div>
 
                     <div class="form-group" data-filter-id="tagsSearch">
-                        <div class="custom-select-multi" id="dropdownTagsSearch">
+                        <div class="custom-select-multi" id="dropdownTagsSearch" data-placeholder="请选择用户标签">
                             <div class="select-selected">
-                                <span class="inline-label">標籤：</span>
-                                <span class="selected-val" style="color: #94a3b8;">請選擇或輸入標籤...</span>
+                                <span class="selected-val" style="color: #94a3b8;">请选择用户标签</span>
+                                <div class="selected-tags-container" style="display: none;"></div>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li class="search-input-li" style="padding: 8px; background: #fff; position: sticky; top: 0; border-bottom: 1px solid var(--border-color); z-index: 10;">
-                                    <input type="text" placeholder="輸入標籤搜尋..." style="width: 100%; padding: 6px 8px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; font-size: 13px;">
+                                <li class="search-input-li" style="padding: 8px 10px; background: #fff; position: sticky; top: 0; border-bottom: 1px solid var(--border-color); z-index: 10; display: flex; gap: 8px; align-items: center;">
+                                    <input type="text" placeholder="输入完整标签名称..." style="flex: 1; padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; outline: none; font-size: 13px;">
+                                    <button type="button" class="tag-search-btn">
+                                        <i class="ph ph-magnifying-glass"></i> 搜索
+                                    </button>
                                 </li>
-                                <li data-value="高價值"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#eab308;"></span>高價值</span></li>
-                                <li data-value="風險"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444;"></span>風險</span></li>
-                                <li data-value="活躍"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e;"></span>活躍</span></li>
-                                <li data-value="沉睡"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#94a3b8;"></span>沉睡</span></li>
-                                <li data-value="異常風險"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px; color: #ea580c; font-weight: 500;"><i class="ph-fill ph-warning-circle" style="font-size: 14px;"></i>異常風險</span></li>
+                                <li data-value="高价值" data-color="#eab308"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#eab308;"></span>高价值</span></li>
+                                <li data-value="风险" data-color="#ef4444"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444;"></span>风险</span></li>
+                                <li data-value="活跃" data-color="#0ea5e9"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#0ea5e9;"></span>活跃</span></li>
+                                <li data-value="沉睡" data-color="#94a3b8"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#94a3b8;"></span>沉睡</span></li>
+                                <li data-value="异常风险" data-color="#ea580c" data-type="warning"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px; color: #ea580c; font-weight: 500;"><i class="ph-fill ph-warning-circle" style="font-size: 14px;"></i>异常风险</span></li>
+                                <li data-value="VIP" data-color="#a855f7"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#a855f7;"></span>VIP</span></li>
+                                <li data-value="新手" data-color="#22c55e"><input type="checkbox"> <span style="display: flex; align-items: center; gap: 6px;"><span class="tag-color-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e;"></span>新手</span></li>
+                                <li class="no-tag-match-li" style="display: none; padding: 12px; text-align: center; color: #94a3b8; font-size: 13px; cursor: default;">无匹配标签</li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="form-group" data-filter-id="promoterAccount">
                         <div class="input-with-inline-label">
-                            <span class="inline-label">推廣人帳號：</span>
-                            <input type="text" placeholder="輸入推廣人帳號" id="inputPromoterAccount">
+                            <span class="inline-label">推广人账号：</span>
+                            <input type="text" placeholder="请输入推广人账号" id="inputPromoterAccount">
                         </div>
                     </div>
 
                     <div class="form-group" data-filter-id="notLoginDays">
                         <div class="input-with-inline-label">
-                            <span class="inline-label">未登錄天數：</span>
-                            <input type="text" placeholder="天數" id="inputOfflineDaysOuter">
+                            <span class="inline-label">未登录天数：</span>
+                            <input type="text" placeholder="请输入未登录天数" id="inputOfflineDaysOuter">
                         </div>
                     </div>
 
                     <div class="form-group" data-filter-id="registerTime">
                         <div class="date-range-container">
-                            <span class="inline-label">註冊時間：</span>
+                            <span class="inline-label">注册时间：</span>
                             <input type="date" class="date-text" id="inputDateStartOuter"
                                 style="border:none; outline:none; background:transparent;">
                             <span class="date-separator-line">~</span>
@@ -206,7 +211,7 @@
                     <div class="account-input-group">
                         <div class="account-type-dropdown" id="accountTypeDropdown">
                             <div class="dropdown-selected" id="accountTypeSelected">
-                                <i class="ph-fill ph-snowflake"></i> <span id="accountTypeText">帳號 (精確匹配)</span> <i
+                                <i class="ph-fill ph-snowflake"></i> <span id="accountTypeText">账号 (精确匹配)</span> <i
                                     class="ph ph-caret-down"></i>
                             </div>
                             <ul class="dropdown-menu" id="accountTypeMenu" style="max-height: 250px; overflow-y: auto;">
@@ -231,18 +236,18 @@
                                 <li data-value="lastLoginIp"><span>上次登录IP</span> <span class="type-badge">IP</span></li>
                             </ul>
                         </div>
-                        <input type="text" id="inputAccount" placeholder="請輸入精確帳號">
+                        <input type="text" id="inputAccount" placeholder="请输入精确账号">
                     </div>
                     <button class="btn btn-outline" id="openAdvancedFilter" style="display: none;">
-                        <i class="ph ph-sliders-horizontal"></i> 進階篩選條件 <span class="badge" id="advancedBadge">0</span>
+                        <i class="ph ph-sliders-horizontal"></i> 进阶筛选条件 <span class="badge" id="advancedBadge">0</span>
                     </button>
                     <button class="btn btn-primary" id="btnSearch">
-                        <i class="ph ph-magnifying-glass"></i> 搜尋
+                        <i class="ph ph-magnifying-glass"></i> 搜索
                     </button>
                     <button class="btn btn-outline" id="btnReset">
                         <i class="ph ph-arrow-counter-clockwise"></i> 重置
                     </button>
-                    <button class="btn btn-outline btn-icon-only" id="btnCustomizeFilter" title="自訂篩選欄位">
+                    <button class="btn btn-outline btn-icon-only" id="btnCustomizeFilter" title="自定义筛选字段">
                         <i class="ph ph-faders"></i>
                     </button>
                 </div>

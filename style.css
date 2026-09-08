@@ -779,6 +779,99 @@ input[type="checkbox"] {
     background-color: #f3f4f6;
 }
 
+/* Tag Select Badges & Search button styling (Image 2 style) */
+.custom-select-single.active-open, .custom-select-multi.active-open {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+
+.selected-tags-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: calc(100% - 24px);
+    scrollbar-width: none;
+}
+.selected-tags-container::-webkit-scrollbar {
+    display: none;
+}
+
+.selected-tag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #334155;
+    white-space: nowrap;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+.selected-tag-badge .tag-badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.selected-tag-badge .tag-badge-divider {
+    width: 1px;
+    height: 12px;
+    background-color: #cbd5e1;
+    margin: 0 2px;
+}
+
+.selected-tag-badge .tag-badge-remove {
+    font-size: 12px;
+    color: #94a3b8;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s;
+}
+
+.selected-tag-badge .tag-badge-remove:hover {
+    color: #ef4444;
+}
+
+.selected-tag-badge.tag-badge-count {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 2px 7px;
+    cursor: default;
+}
+
+.tag-search-btn {
+    padding: 6px 16px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #334155;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.tag-search-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
 /* Detailed table styling */
 td {
     vertical-align: top;
@@ -3771,4 +3864,87 @@ input:checked + .toggle-slider:before {
 }
 #agentChangeRecordDrawer.active {
     right: 0;
+}
+
+.online-hover-container {
+    position: relative;
+    width: 68px;
+    height: 26px;
+    display: inline-block;
+}
+.online-hover-container .status-badge-view {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    transition: opacity 0.2s;
+}
+.online-hover-container .hover-btn {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.online-hover-container:hover .status-badge-view {
+    opacity: 0;
+    pointer-events: none;
+}
+.online-hover-container:hover .hover-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Text Truncation with Tooltip */
+.text-truncate-container {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+    vertical-align: middle;
+}
+.text-truncate-2lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
+}
+.text-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #374151;
+    color: #f9fafb;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    z-index: 50;
+    white-space: normal;
+    min-width: 200px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-bottom: 8px;
+    text-align: left;
+}
+.text-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #374151 transparent transparent transparent;
+}
+.text-truncate-container:hover .text-tooltip {
+    display: block;
+}
+
+input[type="text"], input[type="number"], input[type="password"] {
+    color: #1e293b;
+}
+input[type="text"]::placeholder, input[type="number"]::placeholder, input[type="password"]::placeholder {
+    color: #94a3b8;
 }
