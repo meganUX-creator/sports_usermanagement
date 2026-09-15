@@ -739,7 +739,90 @@ document.addEventListener('DOMContentLoaded', () => {
         return '<span style="color: #94a3b8;">未驗證</span>';
     }
 
-    const compactColumnsConfig = [
+    window.columnViewMode = {
+        depositGroup: 'deposit',
+        withdrawGroup: 'withdraw',
+        dateGroup: 'date',
+        growthGroup: 'growth',
+        balanceBuyGroup: 'balanceBuy',
+        adminOperationsGroup: 'adminAdd'
+    };
+
+    const compositeCols = [
+        { 
+            id: 'depositGroup', group: '存提款', sortable: true, dropdownOptions: [{id:'deposit', label:'存款总额'}, {id:'depositCount', label:'存款次数'}, {id:'quickDeposit', label:'免提直充充值总额'}, {id:'quickDepositCount', label:'免提直充充值次数'}],
+            get label() { return this.dropdownOptions.find(o => o.id === window.columnViewMode.depositGroup).label; },
+            render: (user) => {
+                const mode = window.columnViewMode.depositGroup;
+                if (mode === 'deposit') return `<td class="cell-money ${user.deposit > 0 ? 'highlight' : ''}" data-col="depositGroup">${user.deposit > 0 ? user.deposit : '0.00'}</td>`;
+                if (mode === 'quickDeposit') return `<td class="cell-money ${user.quickDeposit > 0 ? 'highlight' : ''}" data-col="depositGroup">${user.quickDeposit > 0 ? user.quickDeposit : '0.00'}</td>`;
+                if (mode === 'quickDepositCount') return `<td class="cell-val" data-col="depositGroup">${user.quickDepositCount || 0}</td>`;
+                return `<td class="cell-val" data-col="depositGroup">${user.depositCount || 0}</td>`;
+            }
+        },
+        { 
+            id: 'withdrawGroup', group: '存提款', sortable: true, dropdownOptions: [{id:'withdraw', label:'提款总额'}, {id:'withdrawCount', label:'提款次数'}, {id:'quickWithdraw', label:'免提直充提款总额'}, {id:'quickWithdrawCount', label:'免提直充提款次数'}],
+            get label() { return this.dropdownOptions.find(o => o.id === window.columnViewMode.withdrawGroup).label; },
+            render: (user) => {
+                const mode = window.columnViewMode.withdrawGroup;
+                if (mode === 'withdraw') return `<td class="cell-money" data-col="withdrawGroup">${user.withdraw > 0 ? user.withdraw : '0.00'}</td>`;
+                if (mode === 'quickWithdraw') return `<td class="cell-money" data-col="withdrawGroup">${user.quickWithdraw > 0 ? user.quickWithdraw : '0.00'}</td>`;
+                if (mode === 'quickWithdrawCount') return `<td class="cell-val" data-col="withdrawGroup">${user.quickWithdrawCount || 0}</td>`;
+                return `<td class="cell-val" data-col="withdrawGroup">${user.withdrawCount || 0}</td>`;
+            }
+        },
+        { 
+            id: 'dateGroup', group: '日期信息', sortable: true, dropdownOptions: [{id:'date', label:'註冊時間'}, {id:'lastLogin', label:'最後登入'}, {id:'offlineDays', label:'離開天數'}],
+            get label() { return this.dropdownOptions.find(o => o.id === window.columnViewMode.dateGroup).label; },
+            render: (user) => {
+                const mode = window.columnViewMode.dateGroup;
+                if (mode === 'date') return `<td class="cell-val" data-col="dateGroup">${user.date || '28-08-18 01:17'}</td>`;
+                if (mode === 'lastLogin') return `<td class="cell-val" data-col="dateGroup">${user.lastLogin || '今日 01:22:56'}</td>`;
+                return `<td class="cell-val" data-col="dateGroup">${user.offlineDays !== undefined ? user.offlineDays : 0}</td>`;
+            }
+        },
+        { 
+            id: 'growthGroup', group: '等级 & 团队', sortable: true, dropdownOptions: [{id:'growth', label:'成长值'}, {id:'vipGrowth', label:'VIP成长值'}],
+            get label() { return this.dropdownOptions.find(o => o.id === window.columnViewMode.growthGroup).label; },
+            render: (user) => {
+                const mode = window.columnViewMode.growthGroup;
+                if (mode === 'growth') return `<td class="cell-val" data-col="growthGroup">${user.growth || 0}</td>`;
+                return `<td class="cell-val" data-col="growthGroup">${user.vipGrowth || 0}</td>`;
+            }
+        },
+        { 
+            id: 'balanceBuyGroup', group: '信用 & 额度', sortable: true, dropdownOptions: [{id:'balanceBuy', label:'余额宝'}, {id:'interest', label:'余额宝利息'}],
+            get label() { return this.dropdownOptions.find(o => o.id === window.columnViewMode.balanceBuyGroup).label; },
+            render: (user) => {
+                const mode = window.columnViewMode.balanceBuyGroup;
+                if (mode === 'balanceBuy') return `<td class="cell-money ${user.balanceBuy > 0 ? 'highlight' : ''}" data-col="balanceBuyGroup">${user.balanceBuy > 0 ? user.balanceBuy : '0.00'}</td>`;
+                return `<td class="cell-val" data-col="balanceBuyGroup">${user.interest || '0.00'}</td>`;
+            }
+        },
+        { 
+            id: 'adminOperationsGroup', group: '存提款', sortable: true, dropdownOptions: [
+                {id:'adminAdd', label:'后台加款总额'}, 
+                {id:'adminDeduct', label:'后台扣款总额'},
+                {id:'adminActivityAdd', label:'后台活动加款总额'},
+                {id:'adminAddCount', label:'后台加款次数'},
+                {id:'adminDeductCount', label:'后台扣款次数'},
+                {id:'adminActivityAddCount', label:'后台活动加款次数'}
+            ],
+            get label() { return this.dropdownOptions.find(o => o.id === window.columnViewMode.adminOperationsGroup).label; },
+            render: (user) => {
+                const mode = window.columnViewMode.adminOperationsGroup;
+                if (mode === 'adminAdd') return `<td class="cell-val" data-col="adminOperationsGroup">${user.adminAdd || '0.00'}</td>`;
+                if (mode === 'adminDeduct') return `<td class="cell-val" data-col="adminOperationsGroup">${user.adminDeduct || '0.00'}</td>`;
+                if (mode === 'adminActivityAdd') return `<td class="cell-val" data-col="adminOperationsGroup">${user.adminActivityAdd || '0.00'}</td>`;
+                if (mode === 'adminAddCount') return `<td class="cell-val" data-col="adminOperationsGroup">${user.adminAddCount || 0}</td>`;
+                if (mode === 'adminDeductCount') return `<td class="cell-val" data-col="adminOperationsGroup">${user.adminDeductCount || 0}</td>`;
+                if (mode === 'adminActivityAddCount') return `<td class="cell-val" data-col="adminOperationsGroup">${user.adminActivityAddCount || 0}</td>`;
+                return `<td class="cell-val" data-col="adminOperationsGroup">0</td>`;
+            }
+        }
+    ];
+
+    let compactColumnsConfig = [
         { id: 'uid', group: '基本', label: '用户ID', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="uid">${renderDataState(user.uid, 'copyable')}</td>` },
         { id: 'account', group: '基本', label: '会员名', checkboxIndex: 3, render: (user) => `<td data-col="account"><a href="#" class="cell-username user-detail-link" data-uid="${user.uid}">${renderDataState(user.account, 'copyable')}</a></td>` },
         { id: 'online', group: '状态', label: '在线', checkboxIndex: 1, render: (user) => {
@@ -768,19 +851,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 buttonsHtml += `<div style="width: 68px; height: 26px;">${statusBadge}</div>`;
             }
 
-            if (!isDisabled) {
-                buttonsHtml += `<a href="#" class="op-link btn-action-disable" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 26px; font-size: 12px; background: #ef4444; color: white; border-radius: 4px; text-decoration: none;" onclick="window.showConfirmModal('确定要停用此会员吗？', function(){ window.handleDisableUser('${user.uid}', '${user.account}'); }); return false;">停用</a>`;
-            }
             buttonsHtml += `</div>`;
             return `<td data-col="online">${buttonsHtml}</td>`;
         } },
         { id: 'status', group: '状态', label: '状态', checkboxIndex: 1, render: (user) => {
-            let color = '#333';
-            if (user.status === '正常') color = '#16a34a'; // Green
-            else if (user.status === '冻结') color = '#3b82f6'; // Blue
-            else if (user.status === '停用') color = '#ef4444'; // Red
-            else if (user.status === '待审核' || user.status === '待審核') color = '#f59e0b'; // Orange
-            return `<td data-col="status"><span style="color: ${color}; font-weight: 500;">${user.status}</span></td>`;
+            if (user.status === '正常') {
+                return `<td data-col="status">
+                    <div style="display: flex; align-items: center;">
+                        <label style="position: relative; display: inline-flex; align-items: center; width: 54px; height: 24px; background-color: #22c55e; border-radius: 20px; cursor: pointer; transition: .3s; box-sizing: border-box;">
+                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0; position: absolute;" onchange="window.handleStatusToggle(this, '${user.uid}', '${user.account}')">
+                            <span style="color: white; font-size: 12px; font-weight: 500; margin-left: 6px; user-select: none;">正常</span>
+                            <span style="position: absolute; right: 2px; height: 20px; width: 20px; background-color: white; border-radius: 50%; transition: .3s; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+                        </label>
+                    </div>
+                </td>`;
+            } else {
+                let color = '#333';
+                let bgColor = 'rgba(0,0,0,0.1)';
+                if (user.status === '冻结' || user.status === '凍結') { color = '#3b82f6'; bgColor = 'rgba(59, 130, 246, 0.15)'; }
+                else if (user.status === '停用') { color = '#ef4444'; bgColor = 'rgba(239, 68, 68, 0.15)'; }
+                else if (user.status === '待审核' || user.status === '待審核') { color = '#f59e0b'; bgColor = 'rgba(245, 158, 11, 0.15)'; }
+                
+                return `<td data-col="status">
+                    <div style="display: inline-flex; align-items: center; justify-content: center; background-color: ${bgColor}; color: ${color}; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;">
+                        ${user.status}
+                    </div>
+                </td>`;
+            }
         } },
         { id: 'avatar', group: '状态', label: '头像', checkboxIndex: 2, render: (user) => `<td data-col="avatar"><div class="avatar-cell" style="width:24px;height:24px;border-radius:50%;background:#3b82f6;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;margin:0 auto;">${user.account.charAt(0).toLowerCase()}</div></td>` },
         { id: 'realName', group: '账号', label: '真实姓名', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="realName">${hasPerm(37) ? renderDataState(user.realName) : window.maskRealName(user.realName)}</td>` },
@@ -788,7 +885,12 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'agentId', group: '会员信息（详细）', label: '代理', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="agentId">${renderDataState(user.agentId)}</td>` },
         { id: 'inviter', group: '会员信息（详细）', label: '邀请人', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="inviter">${renderDataState(user.inviter)}</td>` },
         { id: 'registerMode', group: '会员信息（详细）', label: '注册模式', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="registerMode">${user.registerMode || '一般注册'}</td>` },
-        { id: 'phone', group: '会员信息（详细）', label: '手机号', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="phone">${hasPerm(85) ? (user.phone !== '未驗證' && user.phone !== '末綁定' && user.phone !== '-' ? user.phone : getPhoneStatusHtml(user.phone)) : window.maskPhone(user.phone)}</td>` },
+        { id: 'phone', group: '会员信息（详细）', label: '手机号', checkboxIndex: 3, render: (user) => {
+            const isBound = user.phone && user.phone !== '-' && user.phone !== '未驗證' && user.phone !== '末綁定' && user.phone !== '未綁定';
+            const statusText = isBound ? '已綁定' : '未綁定';
+            const statusColor = isBound ? '#16a34a' : '#94a3b8';
+            return `<td class="cell-val" data-col="phone"><span style="color: ${statusColor}; font-weight: 500;">${statusText}</span></td>`;
+        } },
         { id: 'deviceType', group: '会员信息（详细）', label: '设备类型', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="deviceType">${renderDataState(user.deviceType)}</td>` },
         { id: 'currency', group: '会员信息（详细）', label: '用户币别', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="currency"><span style="color: #ef4444;">${user.currency || 'BRL'}</span></td>` },
         { id: 'country', group: '会员信息（详细）', label: '国家', checkboxIndex: 3, render: (user) => `<td class="cell-val" data-col="country"><span style="color: #ef4444;">${user.country || '巴西'}</span></td>` },
@@ -921,9 +1023,9 @@ document.addEventListener('DOMContentLoaded', () => {
             </td>`;
         } },
 
-        { id: 'date', group: '日期信息', label: '新增时间', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="date">${user.date || '28-08-18 01:17'}</td>` },
+        { id: 'date', group: '日期信息', label: '注册时间', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="date">${user.date || '28-08-18 01:17'}</td>` },
         { id: 'lastLogin', group: '日期信息', label: '最后登录', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="lastLogin">${user.lastLogin || '今日 01:22:56'}</td>` },
-        { id: 'offlineDays', group: '日期信息', label: '离开天数', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="offlineDays">${user.offlineDays !== undefined ? user.offlineDays : 0}天</td>` },
+        { id: 'offlineDays', group: '日期信息', label: '离开天数', sortable: true, checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="offlineDays">${user.offlineDays !== undefined ? user.offlineDays : 0}</td>` },
         { id: 'ip', group: '日期信息', label: '当前登录IP', checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="ip"><div class="ip-row" style="display: flex; align-items: center; gap: 4px;">${hasPerm(17) ? renderDataState(user.ip || '54.150.111.152', 'ip') : window.maskIp(user.ip)}</div></td>` },
         { id: 'regIp', group: '日期信息', label: '注册 IP', checkboxIndex: 9, render: (user) => `<td class="cell-val" data-col="regIp"><div class="ip-row" style="display: flex; align-items: center; gap: 4px;">${hasPerm(17) ? renderDataState(user.regIp || '54.150.111.152', 'ip') : window.maskIp(user.regIp)}</div></td>` },
         { id: 'remark', group: '备注', label: '备注', checkboxIndex: 10, requirePerm: 21, render: (user) => `<td class="cell-val" data-col="remark" style="max-width: 200px; vertical-align: middle;">${renderDataState(user.remark, 'longText')}</td>` },
@@ -936,6 +1038,15 @@ document.addEventListener('DOMContentLoaded', () => {
             </td>`;
         } }
     ];
+
+    compactColumnsConfig.push(...compositeCols);
+
+    const keepCompactCols = [
+        'uid', 'account', 'online', 'status', 'phone', 'nickname', 'vipLevel', 'availableCredit', 'currency', 'country', 'thirdBal', 
+        'depositGroup', 'withdrawGroup', 'dateGroup', 'creditValue', 'arrears', 'growthGroup', 'points', 'commissionBal', 'balanceBuyGroup', 'adminOperationsGroup', 'action'
+    ];
+    compactColumnsConfig = keepCompactCols.map(id => compactColumnsConfig.find(c => c.id === id)).filter(Boolean);
+
     compactColumnsConfig.forEach(col => { compactColumnVisibility[col.id] = true; });
 
     // Elements for Table Mode & Pagination
@@ -1024,13 +1135,13 @@ document.addEventListener('DOMContentLoaded', () => {
         { uid: "1239361225", account: "mingv0717001", realName: "李小明", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "末綁定", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["高價值", "活躍", "VIP"], status: "正常", date: "2023-01-01 12:00:00", lastLogin: "2023-01-10 15:30:00", offlineDays: 9, ip: "192.168.1.1", remark: "-", followRemark: "-", note: "-", deviceType: "iOS" },
         { uid: "1239361224", account: "albertvn021", realName: "黃大維", nickname: "阿布", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "未驗證", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "06077790", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 0, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "-", interest: 0, thirdBal: 0, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["異常風險", "風險", "沉睡"], status: "停用", date: "2023-01-02 10:00:00", lastLogin: "2023-01-11 09:20:00", offlineDays: 9, ip: "192.168.1.2", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
         { uid: "1239361223", account: "vip_king", realName: "李娜", realNameAudited: true, birthdayAudited: true, nickname: "鄭姐", agentId: "AG888", inviter: "nnest123556", registerMode: "一般註冊", phone: "13812348888", payLevel: "默認層", growth: 1250, level: "鑽石會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "INV02", directTeam: "12/8", vipLevel: 3, vipGrowth: 6800, creditValue: 500, availableCredit: 2000, commissionBal: 680, balanceBuy: 8750, arrears: "0", interest: 120, thirdBal: 320, points: 450, deposit: 3200, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 8, withdrawCount: 4, tags: ["風險", "活躍"], status: "正常", date: "2023-01-05 14:15:00", lastLogin: "2023-01-15 18:45:00", offlineDays: 0, ip: "192.168.1.3", remark: "-", followRemark: "-", note: "-", deviceType: "PC" },
-        { uid: "1239361226", account: "test_user_1", realName: "王大明", nickname: "王大", agentId: "dl", inviter: "nnest123556", registerMode: "後台新增", phone: "0912345678", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE100", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 500, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "0", interest: 0, thirdBal: 150, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["新手", "高價值"], status: "停用", date: "2023-02-01 10:00:00", lastLogin: "2023-03-01 15:30:00", offlineDays: 30, ip: "192.168.2.10", remark: "大戶需關注", followRemark: "-", note: "-", deviceType: "H5" },
+        { uid: "1239361226", account: "test_user_1", realName: "王大明", nickname: "王大", agentId: "dl", inviter: "nnest123556", registerMode: "後台新增", phone: "0912345678", payLevel: "默認層", growth: 0, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE100", directTeam: "0/0", vipLevel: 0, vipGrowth: 0, creditValue: 500, availableCredit: 0, commissionBal: 0, balanceBuy: 0, arrears: "0", interest: 0, thirdBal: 150, points: 0, deposit: 0, withdraw: 0, withdrawPre: "-", adminDeduct: "-", depositCount: 0, withdrawCount: 0, tags: ["新手", "高價值"], status: "待审核", date: "2023-02-01 10:00:00", lastLogin: "2023-03-01 15:30:00", offlineDays: 30, ip: "192.168.2.10", remark: "大戶需關注", followRemark: "-", note: "-", deviceType: "H5" },
         { uid: "1239361227", account: "test_user_2", realName: "林小華", nickname: "", agentId: "AG888", inviter: "-", registerMode: "一般註冊", phone: "0987654321", payLevel: "默認層", growth: 150, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "1/1", vipLevel: 1, vipGrowth: 50, creditValue: 0, availableCredit: 1000, commissionBal: 15, balanceBuy: 300, arrears: "0", interest: 2, thirdBal: 0, points: 25, deposit: 2000, withdraw: 500, withdrawPre: "-", adminDeduct: "-", depositCount: 1, withdrawCount: 1, tags: ["沉睡", "新手"], status: "停用", date: "2023-02-02 10:00:00", lastLogin: "2023-03-02 15:30:00", offlineDays: 1, ip: "192.168.1.100", remark: "-", followRemark: "-", note: "-", deviceType: null },
         { uid: "1239361228", account: "test_user_3", realName: "周思齊", nickname: "Alice", agentId: "nnest123556", inviter: "nnest123556", registerMode: "一般註冊", phone: "13912341002", payLevel: "默認層", growth: 300, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE102", directTeam: "2/2", vipLevel: 2, vipGrowth: 100, creditValue: 500, availableCredit: 2000, commissionBal: 30, balanceBuy: 600, arrears: "0", interest: 4, thirdBal: 0, points: 50, deposit: 4000, withdraw: 1000, withdrawPre: "-", adminDeduct: "-", depositCount: 2, withdrawCount: 2, tags: ["活躍", "高價值"], status: "正常", date: "2023-02-03 10:00:00", lastLogin: "2023-03-03 15:30:00", offlineDays: 2, ip: "192.168.2.12", remark: "-", followRemark: "-", note: "-", deviceType: "Android" },
         { uid: "1239361229", account: "test_user_4", realName: "陳大文", nickname: "", agentId: "dl", inviter: "-", registerMode: "一般註冊", phone: "未綁定", payLevel: "默認層", growth: 450, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "3/0", vipLevel: 3, vipGrowth: 150, creditValue: 0, availableCredit: 3000, commissionBal: 45, balanceBuy: 900, arrears: "0", interest: 6, thirdBal: 0, points: 75, deposit: 6000, withdraw: 1500, withdrawPre: "-", adminDeduct: "-", depositCount: 3, withdrawCount: 3, tags: ["沉睡"], status: "冻结", date: "2023-02-04 10:00:00", lastLogin: "2023-03-04 15:30:00", offlineDays: 3, ip: "192.168.2.13", remark: "這是一段非常長非常長非常長的備註，用來測試單行截斷與懸停提示的效果是否正常運作。", followRemark: "-", note: "-", deviceType: "" },
         { uid: "1239361230", account: "test_user_5", realName: "許大茂", nickname: "小明", agentId: "AG888", inviter: "nnest123556", registerMode: "後台新增", phone: "13912341004", payLevel: "默認層", growth: 600, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE104", directTeam: "4/1", vipLevel: 0, vipGrowth: 200, creditValue: 500, availableCredit: 4000, commissionBal: 60, balanceBuy: 1200, arrears: "0", interest: 8, thirdBal: 150, points: 100, deposit: 8000, withdraw: 2000, withdrawPre: "-", adminDeduct: "-", depositCount: 4, withdrawCount: 4, tags: ["異常風險"], status: "冻结", date: "2023-02-05 10:00:00", lastLogin: "2023-03-05 15:30:00", offlineDays: 4, ip: "192.168.2.14", remark: "-", followRemark: "-", note: "-" },
         { uid: "1239361231", account: "test_user_6", realName: "陳阿明", nickname: "", agentId: "ag123", inviter: "-", registerMode: "一般註冊", phone: "待重新綁定", payLevel: "默認層", growth: 750, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "-", directTeam: "0/2", vipLevel: 1, vipGrowth: 250, creditValue: 0, availableCredit: 5000, commissionBal: 75, balanceBuy: 1500, arrears: "0", interest: 10, thirdBal: 0, points: 125, deposit: 10000, withdraw: 2500, withdrawPre: "-", adminDeduct: "-", depositCount: 5, withdrawCount: 5, tags: ["活躍", "VIP"], status: "正常", date: "2023-02-06 10:00:00", lastLogin: "2023-03-06 15:30:00", offlineDays: 5, ip: "192.168.2.15", remark: "-", followRemark: "-", note: "-" },
-        { uid: "1239361232", account: "test_user_7", realName: "陳大文", nickname: "SuperAdmin", agentId: "dl", inviter: "nnest123556", registerMode: "一般註冊", phone: "審核中", payLevel: "默認層", growth: 900, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE106", directTeam: "1/0", vipLevel: 2, vipGrowth: 300, creditValue: 500, availableCredit: 6000, commissionBal: 90, balanceBuy: 1800, arrears: "0", interest: 12, thirdBal: 0, points: 150, deposit: 12000, withdraw: 3000, withdrawPre: "-", adminDeduct: "-", depositCount: 6, withdrawCount: 0, tags: ["新手"], status: "冻结", date: "2023-02-07 10:00:00", lastLogin: "2023-03-07 15:30:00", offlineDays: 6, ip: "192.168.2.16", remark: "-", followRemark: "-", note: "-" }
+        { uid: "1239361232", account: "test_user_7", realName: "陳大文", nickname: "SuperAdmin", agentId: "dl", inviter: "nnest123556", registerMode: "一般註冊", phone: "審核中", payLevel: "默認層", growth: 900, level: "普通會員", accountType: "普通帳號", userType: "代理會員", inviteCode: "CODE106", directTeam: "1/0", vipLevel: 2, vipGrowth: 300, creditValue: 500, availableCredit: 6000, commissionBal: 90, balanceBuy: 1800, arrears: "0", interest: 12, thirdBal: 0, points: 150, deposit: 12000, withdraw: 3000, withdrawPre: "-", adminDeduct: "-", depositCount: 6, withdrawCount: 0, tags: ["新手"], status: "待审核", date: "2023-02-07 10:00:00", lastLogin: "2023-03-07 15:30:00", offlineDays: 6, ip: "192.168.2.16", remark: "-", followRemark: "-", note: "-" }
     ];
 
     // Generate 200 items to ensure pagination works smoothly with up to 100 items per page
@@ -1321,7 +1432,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const endStr = inputDateEndOuter.value ? inputDateEndOuter.value.replace('T', ' ') : '??';
             tags.push({ 
                 key: 'dateRangeOuter', 
-                label: `新增時間: ${startStr} ~ ${endStr}`, 
+                label: `註冊時間: ${startStr} ~ ${endStr}`, 
                 type: 'inputs',
                 elements: [inputDateStartOuter, inputDateEndOuter] 
             });
@@ -1933,17 +2044,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputVipLevel = document.getElementById('inputVipLevel');
         const vipLevelVal = (inputVipLevel ? inputVipLevel.value.trim() : '') || (inputVipLevelOuter ? inputVipLevelOuter.value.trim() : '');
         const bankCardVal = inputBankCard ? inputBankCard.value.trim() : '';
-        const offlineDaysVal = inputOfflineDays && inputOfflineDays.value.trim() !== '' ? parseInt(inputOfflineDays.value.trim(), 10) : NaN;
+
         const ipVal = inputIp ? inputIp.value.trim() : '';
         const depositVal = inputDeposit && inputDeposit.value.trim() !== '' ? parseFloat(inputDeposit.value.trim()) : NaN;
 
         // Perform Filtering
+        const vipMap = {"普通会员": 0, "白银会员": 1, "黄金会员": 2, "铂金会员": 3, "钻石会员": 4, "至尊会员": 5, "管理员": 6};
+        const inputPromoterAccount = document.getElementById('inputPromoterAccount');
+        const promoterVal = inputPromoterAccount ? inputPromoterAccount.value.trim() : '';
+        const offlineDaysVal = (inputOfflineDaysOuter && inputOfflineDaysOuter.value.trim() !== '') ? parseInt(inputOfflineDaysOuter.value.trim(), 10) : ((inputOfflineDays && inputOfflineDays.value.trim() !== '') ? parseInt(inputOfflineDays.value.trim(), 10) : NaN);
+
         const filtered = mockUsers.filter(user => {
             if (selectedStatusVal && user.status !== selectedStatusVal) return false;
             if (selectedLevelVal && user.level !== selectedLevelVal) return false;
-            if (selectedVipVal && user.vip !== selectedVipVal) return false;
-            if (selectedOthers.length > 0 && !selectedOthers.includes(user.other)) return false;
+            if (selectedVipVal && user.vipLevel !== vipMap[selectedVipVal]) return false;
+            if (typeof selectedDeviceTypeVal !== 'undefined' && selectedDeviceTypeVal && user.deviceType !== selectedDeviceTypeVal) return false;
+            if (typeof selectedCountryVal !== 'undefined' && selectedCountryVal && user.country !== selectedCountryVal) return false;
+            if (selectedOthers.length > 0) {
+                if (selectedOthers.includes("测试账号") && user.account.includes("test")) return false;
+                if (selectedOthers.includes("未充值玩家") && user.deposit === 0) return false;
+            }
             if (selectedTags.length > 0 && (!user.tags || !selectedTags.some(tag => user.tags.includes(tag)))) return false;
+
             
             // Account filter
             if (accountVal) {
@@ -1984,6 +2106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (vipLevelVal && user.vipLevel !== undefined && user.vipLevel.toString() !== vipLevelVal) return false;
             if (bankCardVal && !user.bankCard.includes(bankCardVal)) return false;
             if (!isNaN(offlineDaysVal) && user.offlineDays <= offlineDaysVal) return false;
+            if (promoterVal && user.agentId !== promoterVal && user.inviteCode !== promoterVal && user.inviter !== promoterVal) return false;
             if (ipVal && !user.ip.includes(ipVal)) return false;
             if (!isNaN(depositVal) && user.deposit <= depositVal) return false;
 
@@ -2090,30 +2213,83 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                let groupRowHtml = `<th class="header-group sticky-col sticky-col-1" rowspan="2" width="40" style="left:0; z-index:12;"><input type="checkbox" id="selectAllCheckboxCompact"></th>`;
-                let subRowHtml = ``;
+                let headerHtml = `<th class="header-group sticky-col sticky-col-1" style="width: 32px; min-width: 32px; max-width: 32px; left:0; z-index:12; text-align:center; padding: 0;"><i class="ph ph-caret-right btn-expand-all" id="btnExpandAllCompact" style="cursor:pointer; color:#64748b; font-size:16px;" title="展開全部"></i></th><th class="header-group sticky-col sticky-col-2" style="width: 32px; min-width: 32px; max-width: 32px; left:32px; z-index:12; text-align:center; padding: 0;"><input type="checkbox" id="selectAllCheckboxCompact"></th>`;
 
-                let currentLeft = 40; // Starts after checkbox
+                let currentLeft = 64; // Starts after expand button and checkbox
 
-                // Pinned headers span both rows (rowspan="2")
-                pinned.forEach(col => {
-                    groupRowHtml += `<th class="header-group sticky-col" rowspan="2" style="left:${currentLeft}px; min-width:110px; z-index:12;" data-col="${col.id}">
-                        <div style="display:flex;align-items:center;white-space:nowrap;justify-content:space-between;">
-                            <div style="display:flex;align-items:center;">
-                                <span>${col.label}</span>
-                                ${col.sortable ? getSortBtn(col.id) : ''}
+                // Helper to render header cell content with Dropdown
+                const renderHeaderCell = (col, isPinned) => {
+                    const pinIconClass = isPinned ? 'ph-push-pin active' : 'ph-push-pin';
+                    const pinTitle = isPinned ? '取消釘選' : '釘選欄位';
+                    const isActive = currentSortColumn === col.id;
+                    const isAsc = isActive && currentSortDirection === 'asc';
+                    const isDesc = isActive && currentSortDirection === 'desc';
+                    
+                    let labelHtml = `<span>${col.label}</span>`;
+                    
+                    if (col.dropdownOptions) {
+                        const currentVal = window.columnViewMode[col.id];
+                        
+                        let dropdownItemsHtml = col.dropdownOptions.map(opt => {
+                            const isSelected = opt.id === currentVal;
+                            const icon = isSelected ? '<i class="ph ph-check" style="margin-right:4px;"></i>' : '<span style="width:16px; display:inline-block; margin-right:4px;"></span>';
+                            return `<div class="group-dropdown-item" data-group-id="${col.id}" data-opt-id="${opt.id}" style="padding:6px 12px; cursor:pointer; display:flex; align-items:center; color:${isSelected ? '#0f172a' : '#64748b'}; font-weight:${isSelected ? '500' : 'normal'}; transition:background 0.2s;">${icon} <span style="font-size:13px;">${opt.label}</span></div>`;
+                        }).join('');
+
+                        labelHtml = `
+                            <div class="header-group-dropdown-container" style="position:relative; display:flex; align-items:center;">
+                                <div class="btn-group-dropdown" style="display:flex; align-items:center; cursor:pointer; border:1px solid #e2e8f0; border-radius:6px; padding:4px 8px; font-size:13px; font-weight:500; color:#334155; background:#f8fafc; transition:background 0.2s;">
+                                    ${col.label} <i class="ph ph-caret-down" style="margin-left:4px; color:#94a3b8;"></i>
+                                </div>
+                                <div class="group-dropdown-menu" style="position:absolute; top:100%; left:0; background:#fff; border:1px solid #e2e8f0; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:9999; margin-top:4px; display:none; flex-direction:column; min-width:140px; overflow:hidden; padding:4px 0;">
+                                    ${dropdownItemsHtml}
+                                </div>
                             </div>
-                            <i class="ph ph-push-pin icon-pin active" data-id="${col.id}" title="取消釘選"></i>
+                        `;
+                    }
+                    
+                    return `
+                        <div style="display:flex;align-items:center;white-space:nowrap;justify-content:space-between;width:100%;">
+                            <div style="display:flex;align-items:center;">
+                                ${labelHtml}
+                                ${isActive ? `<i class="ph-fill ph-caret-${isDesc ? 'down' : 'up'}" style="margin-left:4px; font-size:12px; color:#3b82f6;"></i>` : ''}
+                            </div>
+                            <div class="header-dropdown-container" style="position:relative; display:flex; align-items:center;">
+                                <button class="btn-header-more" style="background:transparent; border:none; padding:4px; cursor:pointer; border-radius:4px; display:flex; align-items:center; justify-content:center; margin-left:8px;">
+                                    <i class="ph ph-dots-three-vertical" style="color:#94a3b8; font-size:16px;"></i>
+                                </button>
+                                <div class="header-dropdown-menu" style="position:absolute; top:100%; right:0; background:#fff; border:1px solid #e2e8f0; border-radius:8px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); padding:4px; z-index:50; flex-direction:row; gap:4px; margin-top:4px;">
+                                    ${col.sortable ? `
+                                        <button class="sort-btn" data-sort="${col.id}" data-dir="desc" style="background:${isDesc ? '#f1f5f9' : 'transparent'}; border:none; padding:6px; cursor:pointer; border-radius:4px; display:flex; align-items:center; justify-content:center;" title="降序"><i class="ph ph-sort-descending" style="font-size:18px; color:${isDesc ? '#3b82f6' : '#64748b'};"></i></button>
+                                        <button class="sort-btn" data-sort="${col.id}" data-dir="asc" style="background:${isAsc ? '#f1f5f9' : 'transparent'}; border:none; padding:6px; cursor:pointer; border-radius:4px; display:flex; align-items:center; justify-content:center;" title="升序"><i class="ph ph-sort-ascending" style="font-size:18px; color:${isAsc ? '#3b82f6' : '#64748b'};"></i></button>
+                                    ` : ''}
+                                    <button class="icon-pin" data-id="${col.id}" style="background:transparent; border:none; padding:6px; cursor:pointer; border-radius:4px; display:flex; align-items:center; justify-content:center;" title="${pinTitle}"><i class="ph ${pinIconClass}" style="font-size:18px; color:${isPinned ? '#3b82f6' : '#64748b'};"></i></button>
+                                </div>
+                            </div>
                         </div>
+                    `;
+                };
+
+                // Pinned headers
+                pinned.forEach(col => {
+                    headerHtml += `<th class="header-group sticky-col" style="left:${currentLeft}px; min-width:110px; z-index:12; padding: 12px 16px;" data-col="${col.id}">
+                        ${renderHeaderCell(col, true)}
                     </th>`;
                     currentLeft += 110;
                 });
 
-                // Action header (fixed on the right) with Image 2 Icon
+                // Unpinned headers
+                const unpinnedWithoutAction = unpinned.filter(col => col.id !== 'action');
+                unpinnedWithoutAction.forEach(col => {
+                    headerHtml += `<th class="header-sub" data-col="${col.id}" style="padding: 12px 16px;">
+                        ${renderHeaderCell(col, false)}
+                    </th>`;
+                });
+
+                // Action header (fixed on the right)
                 const actionCol = visibleColumnsConfig.find(col => col.id === 'action');
-                let actionHeaderHtml = '';
                 if (actionCol) {
-                    actionHeaderHtml = `<th class="header-group sticky-col-right" rowspan="2" data-col="action" style="min-width: 60px; z-index:12;">
+                    headerHtml += `<th class="header-group sticky-col-right" data-col="action" style="min-width: 60px; z-index:12; padding: 12px 16px;">
                         <div style="display:flex;align-items:center;white-space:nowrap;justify-content:center;">
                             <button type="button" class="btn-custom-columns-header btn-header-columns-toggle" title="自訂欄位">
                                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
@@ -2125,44 +2301,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </th>`;
                 }
 
-                // Unpinned headers grouped sequentially
-                let currentGroup = '';
-                let groupColSpan = 0;
-                
-                const unpinnedWithoutAction = unpinned.filter(col => col.id !== 'action');
-                unpinnedWithoutAction.forEach(col => {
-                    if (col.group !== currentGroup) {
-                        if (currentGroup !== '') {
-                            groupRowHtml += `<th class="header-group" colspan="${groupColSpan}">${currentGroup}</th>`;
-                        }
-                        currentGroup = col.group;
-                        groupColSpan = 1;
-                    } else {
-                        groupColSpan++;
-                    }
-
-                    subRowHtml += `<th class="header-sub" data-col="${col.id}">
-                        <div style="display:flex;align-items:center;white-space:nowrap;justify-content:space-between;">
-                            <div style="display:flex;align-items:center;">
-                                <span>${col.label}</span>
-                                ${col.sortable ? getSortBtn(col.id) : ''}
-                            </div>
-                            <i class="ph ph-push-pin icon-pin" data-id="${col.id}" title="釘選欄位"></i>
-                        </div>
-                    </th>`;
-                });
-
-                if (currentGroup !== '') {
-                    groupRowHtml += `<th class="header-group" colspan="${groupColSpan}">${currentGroup}</th>`;
-                }
-
-                if (actionHeaderHtml) {
-                    groupRowHtml += actionHeaderHtml;
-                }
-
                 userTableHeader.innerHTML = `
-                    <tr class="header-group-row">${groupRowHtml}</tr>
-                    <tr class="header-sub-row">${subRowHtml}</tr>
+                    <tr class="header-single-row">${headerHtml}</tr>
                 `;
             }
         }
@@ -2260,9 +2400,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         actionsHtml += `<div style="width: 68px; height: 26px;">${statusBadge}</div>`;
                     }
 
-                    if (!isDisabled) {
-                        actionsHtml += `<a href="#" class="op-link btn-action-disable" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 26px; font-size: 12px; background: #ef4444; color: white; border-radius: 4px; text-decoration: none;" onclick="window.showConfirmModal('确定要停用此会员吗？', function(){ window.handleDisableUser('${user.uid}', '${user.account}'); }); return false;">停用</a>`;
-                    }
                     
                     nestedRowHtml += `<td style="text-align: center;">
                         <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
@@ -2335,13 +2472,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     </td>`;
                 }
                 if (nestedColumnVisibility['status']) {
-                    nestedRowHtml += `<td>
-                        <span class="user-custom-tag tag-green">正常</span>
-                    </td>`;
+                    let statusHtml = '';
+                    if (user.status === '正常') {
+                        statusHtml = `
+                            <div style="display: flex; align-items: center; justify-content: center;">
+                                <label style="position: relative; display: inline-flex; align-items: center; width: 54px; height: 24px; background-color: #22c55e; border-radius: 20px; cursor: pointer; transition: .3s; box-sizing: border-box;">
+                                    <input type="checkbox" checked style="opacity: 0; width: 0; height: 0; position: absolute;" onchange="window.handleStatusToggle(this, '${user.uid}', '${user.account}')">
+                                    <span style="color: white; font-size: 12px; font-weight: 500; margin-left: 6px; user-select: none;">正常</span>
+                                    <span style="position: absolute; right: 2px; height: 20px; width: 20px; background-color: white; border-radius: 50%; transition: .3s; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></span>
+                                </label>
+                            </div>
+                        `;
+                    } else {
+                        let color = '#333';
+                        let bgColor = 'rgba(0,0,0,0.1)';
+                        if (user.status === '冻结' || user.status === '凍結') { color = '#3b82f6'; bgColor = 'rgba(59, 130, 246, 0.15)'; }
+                        else if (user.status === '停用') { color = '#ef4444'; bgColor = 'rgba(239, 68, 68, 0.15)'; }
+                        else if (user.status === '待审核' || user.status === '待審核') { color = '#f59e0b'; bgColor = 'rgba(245, 158, 11, 0.15)'; }
+                        
+                        statusHtml = `
+                            <div style="display: inline-flex; align-items: center; justify-content: center; background-color: ${bgColor}; color: ${color}; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;">
+                                ${user.status}
+                            </div>
+                        `;
+                    }
+                    nestedRowHtml += `<td style="text-align: center;">${statusHtml}</td>`;
                 }
                 if (nestedColumnVisibility['dateInfo']) {
                     nestedRowHtml += `<td class="nested-cell-info">
-                        <div><span class="info-label">新增时间 :</span> ${renderDataState(user.date || '28-08-18 01:17')}</div>
+                        <div><span class="info-label">注册时间 :</span> ${renderDataState(user.date || '28-08-18 01:17')}</div>
                         <div><span class="info-label">最后登录 :</span> ${renderDataState(user.lastLogin || '今日 01:22:56')}</div>
                         <div><span class="info-label">离开天数 :</span> ${user.offlineDays !== undefined ? user.offlineDays : 0}天</div>
                         <div><span class="info-label">当前登录IP :</span> ${hasPerm(17) ? renderDataState(user.ip || '54.150.111.152', 'ip') : window.maskIp(user.ip)}</div>
@@ -2400,9 +2559,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     else unpinned.push(col);
                 });
 
-                let cellsHtml = `<td class="sticky-col sticky-col-1" style="left:0;"><input type="checkbox" class="user-checkbox"></td>`;
+                let cellsHtml = `<td class="sticky-col sticky-col-1" style="width: 32px; min-width: 32px; max-width: 32px; left:0; text-align:center; padding: 0;"><i class="ph ph-caret-right btn-expand-row" style="cursor:pointer; color:#64748b; font-size:16px;" data-uid="${user.uid}"></i></td><td class="sticky-col sticky-col-2" style="width: 32px; min-width: 32px; max-width: 32px; left:32px; text-align:center; padding: 0;"><input type="checkbox" class="user-checkbox"></td>`;
                 
-                let currentLeft = 40;
+                let currentLeft = 64;
                 pinned.forEach(col => {
                     let cellStr = col.render(user);
                     const match = cellStr.match(/^<td([^>]*?)class="([^"]*)"/);
@@ -2429,6 +2588,82 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             userTableBody.appendChild(tr);
+
+            if (currentTableMode === 'compact') {
+                const expandTr = document.createElement('tr');
+                expandTr.className = 'expand-card-row';
+                expandTr.id = `expand-card-${user.uid}`;
+                expandTr.style.display = 'none';
+                
+                const colspan = Object.keys(compactColumnVisibility).filter(k => compactColumnVisibility[k]).length + 2;
+                
+                expandTr.innerHTML = `
+                <td colspan="${colspan}" style="padding: 16px; background-color: #f8fafc; border-bottom: 1px solid var(--border-color);">
+                    <div style="display:flex; gap:16px; align-items: stretch; width: max-content;">
+                        <!-- Card 1: 基本資料 -->
+                        <div style="width: 400px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                                <div style="color:#2563eb; font-weight:600; display:flex; align-items:center; gap:8px;"><i class="ph ph-user"></i> 基本資料</div>
+                            </div>
+                            <div style="display:flex; font-size:13px;">
+                                <div style="flex:1; display:flex; flex-direction:column; padding-right:12px; border-right:1px solid #f1f5f9;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">大頭照</span> <span style="display:inline-block;width:24px;height:24px;background:#3b82f6;color:white;border-radius:50%;text-align:center;line-height:24px;font-weight:600;">M</span></div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">真實姓名</span> <span style="font-weight:500;">-</span></div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">生日</span> <span style="font-weight:500;font-family:monospace;">1991-02-11</span></div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;"><span style="color:#64748b;">帳號類型</span> <span style="font-weight:500;">普通帳号</span></div>
+                                </div>
+                                <div style="flex:1; display:flex; flex-direction:column; padding-left:12px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">會員類型</span> <span style="font-weight:500;">代理会员</span></div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">等級</span> <span style="font-weight:500;">VIP会员</span></div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">支付層級</span> <span style="font-weight:500;">默认层</span></div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;"><span style="color:#64748b;">註冊模式</span> <span style="font-weight:500;">一般注册</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 2: 設備與ip -->
+                        <div style="width: 320px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                                <div style="color:#2563eb; font-weight:600; display:flex; align-items:center; gap:8px;"><i class="ph ph-desktop"></i> 設備與ip</div>
+                                <a href="#" class="device-detail-link" data-uid="${user.uid}" style="color:#2563eb; text-decoration:none; font-size:12px;">設備詳情 <i class="ph ph-arrow-right"></i></a>
+                            </div>
+                            <div style="display:flex; flex-direction:column; font-size:13px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">註冊 IP</span> <div><span style="font-weight:500;font-family:monospace;">192.168.1.1</span> <i class="ph ph-copy" style="color:#cbd5e1;margin-left:4px;cursor:pointer;"></i></div></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">上次登錄 IP</span> <div><span style="font-weight:500;font-family:monospace;">192.168.1.1</span> <i class="ph ph-copy" style="color:#cbd5e1;margin-left:4px;cursor:pointer;"></i></div></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">登入 IP</span> <div><span style="font-weight:500;font-family:monospace;">192.168.1.1</span> <i class="ph ph-copy" style="color:#cbd5e1;margin-left:4px;cursor:pointer;"></i></div></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;"><span style="color:#64748b;">設備類型</span> <div><span style="font-weight:500;">${user.deviceType || 'H5'}</span></div></div>
+                            </div>
+                        </div>
+                        <!-- Card 3: 推薦關係 -->
+                        <div style="width: 300px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                                <div style="color:#2563eb; font-weight:600; display:flex; align-items:center; gap:8px;"><i class="ph ph-share-network"></i> 推薦關係</div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; font-size:13px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">代理</span> <span style="font-weight:500;">d1</span></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">邀請人</span> <span style="font-weight:500;">-</span></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9;"><span style="color:#64748b;">邀請碼</span> <span style="font-weight:500;">-</span></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;"><span style="color:#64748b;">下級/團隊</span> <a href="#" style="color:#2563eb;font-weight:500;text-decoration:none;">0/0</a></div>
+                            </div>
+                        </div>
+                        <!-- Card 4: 標籤 -->
+                        <div style="width: 300px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                                <div style="color:#2563eb; font-weight:600; display:flex; align-items:center; gap:8px;"><i class="ph ph-tag"></i> 標籤</div>
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; gap:8px; align-content: flex-start; padding-top:4px;">
+                                <span style="background:#e0f2fe;color:#0ea5e9;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">VIP 客戶</span>
+                                <span style="background:#dcfce7;color:#16a34a;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">高頻交易</span>
+                                <span style="background:#f1f5f9;color:#64748b;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:500;">大户</span>
+                                <span style="background:#f1f5f9;color:#64748b;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:500;">标签四</span>
+                                <span style="background:#f1f5f9;color:#64748b;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:500;">标签五</span>
+                                <span style="background:#f1f5f9;color:#64748b;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:500;">标签六</span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                `;
+                userTableBody.appendChild(expandTr);
+            }
         });
 
         // Bind Header Columns Toggle Button (Image 2 Icon)
@@ -2451,6 +2686,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+
+        // Bind Expand Button
+        userTableBody.querySelectorAll('.btn-expand-row').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const uid = btn.getAttribute('data-uid');
+                const row = document.getElementById(`expand-card-${uid}`);
+                if (row) {
+                    if (row.style.display === 'none') {
+                        row.style.display = '';
+                        btn.classList.replace('ph-caret-right', 'ph-caret-down');
+                        btn.closest('tr').style.borderBottom = 'none'; // visually group with expanded row
+                    } else {
+                        row.style.display = 'none';
+                        btn.classList.replace('ph-caret-down', 'ph-caret-right');
+                        btn.closest('tr').style.borderBottom = '';
+                    }
+                }
+            });
+        });
+
+        // Bind Expand All Button
+        const btnExpandAllCompact = document.getElementById('btnExpandAllCompact');
+        if (btnExpandAllCompact) {
+            btnExpandAllCompact.addEventListener('click', () => {
+                const isExpanded = btnExpandAllCompact.classList.contains('ph-caret-down');
+                const rowExpandBtns = userTableBody.querySelectorAll('.btn-expand-row');
+                
+                if (isExpanded) {
+                    // Collapse all
+                    btnExpandAllCompact.classList.replace('ph-caret-down', 'ph-caret-right');
+                    rowExpandBtns.forEach(btn => {
+                        const uid = btn.getAttribute('data-uid');
+                        const row = document.getElementById(`expand-card-${uid}`);
+                        if (row) {
+                            row.style.display = 'none';
+                            btn.classList.replace('ph-caret-down', 'ph-caret-right');
+                            btn.closest('tr').style.borderBottom = '';
+                        }
+                    });
+                } else {
+                    // Expand all
+                    btnExpandAllCompact.classList.replace('ph-caret-right', 'ph-caret-down');
+                    rowExpandBtns.forEach(btn => {
+                        const uid = btn.getAttribute('data-uid');
+                        const row = document.getElementById(`expand-card-${uid}`);
+                        if (row) {
+                            row.style.display = '';
+                            btn.classList.replace('ph-caret-right', 'ph-caret-down');
+                            btn.closest('tr').style.borderBottom = 'none';
+                        }
+                    });
+                }
+            });
+        }
 
         // Bind Compact Mode Row Action Dropdown Events
         userTableBody.querySelectorAll('.btn-op-more').forEach(btn => {
@@ -2510,11 +2799,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const col = btn.getAttribute('data-sort');
-                    if (currentSortColumn === col) {
-                        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-                    } else {
+                    const dir = btn.getAttribute('data-dir');
+                    if (dir) {
                         currentSortColumn = col;
-                        currentSortDirection = 'desc';
+                        currentSortDirection = dir;
+                    } else {
+                        if (currentSortColumn === col) {
+                            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            currentSortColumn = col;
+                            currentSortDirection = 'desc';
+                        }
                     }
                     renderTable();
                 });
@@ -3273,15 +3568,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Delegated click listener for user links
     document.addEventListener('click', (e) => {
-        const link = e.target.closest('.user-detail-link');
-        if (link) {
+        const userLink = e.target.closest('.user-detail-link');
+        const deviceLink = e.target.closest('.device-detail-link');
+        const groupDropdownItem = e.target.closest('.group-dropdown-item');
+        const groupDropdownBtn = e.target.closest('.btn-group-dropdown');
+
+        if (groupDropdownBtn) {
             e.preventDefault();
-            const uid = link.getAttribute('data-uid');
-            const text = link.textContent.trim();
-                        if (text.includes('詳情') || text.includes('详情')) {
+            e.stopPropagation();
+            const container = groupDropdownBtn.closest('.header-group-dropdown-container');
+            const isActive = container.classList.contains('active');
+            document.querySelectorAll('.header-group-dropdown-container.active').forEach(el => el.classList.remove('active'));
+            if (!isActive) container.classList.add('active');
+            return;
+        }
+
+        if (!e.target.closest('.header-group-dropdown-container')) {
+            document.querySelectorAll('.header-group-dropdown-container.active').forEach(el => el.classList.remove('active'));
+        }
+
+        if (groupDropdownItem) {
+            e.preventDefault();
+            e.stopPropagation();
+            const groupId = groupDropdownItem.getAttribute('data-group-id');
+            const optId = groupDropdownItem.getAttribute('data-opt-id');
+            if (groupId && optId && window.columnViewMode) {
+                window.columnViewMode[groupId] = optId;
+                if (window.renderTable) window.renderTable();
+            }
+            return;
+        }
+
+        if (userLink) {
+            e.preventDefault();
+            const uid = userLink.getAttribute('data-uid');
+            const text = userLink.textContent.trim();
+            if (text.includes('詳情') || text.includes('详情')) {
                 if (window.openUserDetailsDrawer) window.openUserDetailsDrawer(uid);
             } else {
                 openUserEditModal(uid);
+            }
+        } else if (deviceLink) {
+            e.preventDefault();
+            const uid = deviceLink.getAttribute('data-uid');
+            if (window.openUserDetailsDrawer) {
+                window.openUserDetailsDrawer(uid);
+                // Switch to detailsLogin tab
+                const loginTabBtn = document.querySelector('.user-details-tab-item[data-target="detailsLogin"]');
+                if (loginTabBtn) {
+                    // Small timeout to allow drawer to render first
+                    setTimeout(() => loginTabBtn.click(), 50);
+                }
             }
         }
     });
@@ -3701,7 +4038,7 @@ window.filterIpRecords = function(val) {
 };
 
 // Global Confirm Modal function
-window.showConfirmModal = function(message, onConfirm) {
+window.showConfirmModal = function(message, onConfirm, onCancel) {
     const modal = document.getElementById('globalConfirmModal');
     const msgEl = document.getElementById('globalConfirmModalMessage');
     const btnOk = document.getElementById('btnGlobalConfirmOk');
@@ -3711,6 +4048,8 @@ window.showConfirmModal = function(message, onConfirm) {
     if (!modal) {
         if (confirm(message)) {
             if (onConfirm) onConfirm();
+        } else {
+            if (onCancel) onCancel();
         }
         return;
     }
@@ -3736,6 +4075,7 @@ window.showConfirmModal = function(message, onConfirm) {
         e.preventDefault();
         e.stopPropagation();
         close();
+        if (onCancel) onCancel();
     };
     
     if (btnClose) {
@@ -3743,7 +4083,20 @@ window.showConfirmModal = function(message, onConfirm) {
             e.preventDefault();
             e.stopPropagation();
             close();
+            if (onCancel) onCancel();
         };
+    }
+};
+
+window.handleStatusToggle = function(checkbox, uid, account) {
+    if (!checkbox.checked) {
+        window.showConfirmModal(`确定要停用会员 ${account} 吗？`, function() {
+            if (window.handleDisableUser) {
+                window.handleDisableUser(uid, account);
+            }
+        }, function() {
+            checkbox.checked = true;
+        });
     }
 };
 

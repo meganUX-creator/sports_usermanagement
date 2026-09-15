@@ -34,8 +34,8 @@
                         <button class="btn btn-outline" id="btnBatchOperations">批量操作 <i
                                 class="ph ph-caret-down"></i></button>
                         <ul class="batch-dropdown-menu" id="batchOperationsMenu">
-                            <li id="batchItem-12">更新用戶餘額</li>
-                            <li id="batchItem-14">用戶資訊</li>
+                            <li id="batchItem-12">批量更新用戶餘額</li>
+                            <li id="batchItem-14">批量用戶資訊</li>
                         </ul>
                     </div>
                     <div class="topbar-divider"></div>
@@ -62,6 +62,7 @@
                                 <li data-value="正常">正常</li>
                                 <li data-value="冻结">冻结</li>
                                 <li data-value="停用">停用</li>
+                                <li data-value="待审核">待审核</li>
                             </ul>
                         </div>
                     </div>
@@ -103,11 +104,14 @@
                     <div class="form-group" data-filter-id="other">
                         <div class="custom-select-multi" id="dropdownOther" data-placeholder="请选择排除条件">
                             <div class="select-selected">
-                                <span class="selected-val" style="color: #94a3b8;">请选择排除条件</span>
+                                <span class="selected-val" style="display: none;">请选择排除条件</span>
+                                <div class="selected-tags-container" style="display: flex;">
+                                    <span class="selected-tag-badge" data-value="测试账号">测试账号<i class="ph ph-x tag-badge-remove remove-tag" data-value="测试账号"></i></span>
+                                </div>
                                 <i class="ph ph-caret-down"></i>
                             </div>
                             <ul class="select-options">
-                                <li data-value="测试账号"><input type="checkbox">
+                                <li data-value="测试账号" class="selected"><input type="checkbox" checked>
                                     <span>测试账号</span>
                                 </li>
                                 <li data-value="未充值玩家"><input type="checkbox"> <span>未充值玩家</span></li>
@@ -198,10 +202,10 @@
                     <div class="form-group" data-filter-id="registerTime">
                         <div class="date-range-container">
                             <span class="inline-label">注册时间：</span>
-                            <input type="date" class="date-text" id="inputDateStartOuter"
+                            <input type="datetime-local" step="1" class="date-text" id="inputDateStartOuter"
                                 style="border:none; outline:none; background:transparent;">
                             <span class="date-separator-line">~</span>
-                            <input type="date" class="date-text" id="inputDateEndOuter"
+                            <input type="datetime-local" step="1" class="date-text" id="inputDateEndOuter"
                                 style="border:none; outline:none; background:transparent;">
                         </div>
                     </div>
@@ -368,7 +372,7 @@
                 style="display: flex; gap: 24px; border-bottom: 1px solid var(--border-color); padding: 0 24px; background: #ffffff;">
                 <button type="button" class="user-edit-tab-item user-details-tab-item active" data-target="detailsBasic">會員信息</button>
                 <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsWithdraw">提款信息</button>
-                <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsLogin">登入與註冊紀錄</button>
+                <button type="button" class="user-edit-tab-item user-details-tab-item" data-target="detailsLogin">設備與ip紀錄</button>
             </div>
 
             <div class="drawer-body user-details-form-body"
@@ -480,10 +484,12 @@
                         <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 14px;">
                             <thead>
                                 <tr style="background-color: #f8fafc; color: var(--text-secondary); border-bottom: 1px solid var(--border-color);">
-                                    <th style="padding: 16px; font-weight: 600;">提款類型</th>
-                                    <th style="padding: 16px; font-weight: 600;">銀行卡號/虛擬幣地址/支付寶帳號</th>
-                                    <th style="padding: 16px; font-weight: 600;">開戶銀行</th>
+                                    <th style="padding: 16px; font-weight: 600;">提款类型</th>
+                                    <th style="padding: 16px; font-weight: 600;">开户银行/虚拟币合约/PIX</th>
+                                    <th style="padding: 16px; font-weight: 600;">银行卡号/虚拟币地址/支付宝账号/CPF</th>
+                                    <th style="padding: 16px; font-weight: 600;">邮箱/手机号/EVP</th>
                                     <th style="padding: 16px; font-weight: 600;">分行地址</th>
+                                    <th style="padding: 16px; font-weight: 600; text-align: center;">操作</th>
                                 </tr>
                             </thead>
                             <tbody id="viewWithdrawTableBody">
@@ -1026,7 +1032,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="patch_settings.js"></script>
 
         </main>
 
