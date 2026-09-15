@@ -827,30 +827,16 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'account', group: '基本', label: '会员名', checkboxIndex: 3, render: (user) => `<td data-col="account"><a href="#" class="cell-username user-detail-link" data-uid="${user.uid}">${renderDataState(user.account, 'copyable')}</a></td>` },
         { id: 'online', group: '状态', label: '在线', checkboxIndex: 1, render: (user) => {
             const isOnline = user.offlineDays === 0;
-            const isDisabled = user.status === '停用' || user.status === '冻结';
-            
-            const badgeBg = isOnline ? '#dcfce7' : '#f1f5f9';
-            const badgeColor = isOnline ? '#16a34a' : '#64748b';
-            const dotColor = isOnline ? '#10b981' : '#9ca3af';
-            
-            const statusBadge = `
-                <div class="status-badge-view" style="display: flex; align-items: center; justify-content: center; gap: 4px; background: ${badgeBg}; border-radius: 13px; width: 68px; height: 26px;">
-                    <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${dotColor};"></span>
-                    <span style="color: ${badgeColor}; font-size: 12px; font-weight: 500;">${isOnline ? '在线' : '离线'}</span>
-                </div>
-            `;
-            
-            let buttonsHtml = `<div style="display: flex; align-items: center; justify-content: flex-start; gap: 6px;">`;
+
+            let buttonsHtml = `<div style="display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
+                <span class="status-dot-icon ${isOnline ? 'online' : 'offline'}"></span>`;
             if (isOnline) {
                 buttonsHtml += `
-                <div class="online-hover-container">
-                    ${statusBadge}
-                    <a href="#" class="op-link btn-action-kick hover-btn" style="display: flex; align-items: center; justify-content: center; background: #f97316; color: white; border-radius: 4px; text-decoration: none; font-size: 12px;" onclick="window.showConfirmModal('确定要将此会员踢下线吗？', function(){ window.handleKickOfflineUser('${user.uid}', '${user.account}'); }); return false;">踢下线</a>
-                </div>`;
-            } else {
-                buttonsHtml += `<div style="width: 68px; height: 26px;">${statusBadge}</div>`;
+                <span class="online-disconnect-btn" onclick="window.showConfirmModal('确定要将此会员踢下线吗？', function(){ window.handleKickOfflineUser('${user.uid}', '${user.account}'); });">
+                    <i class="ph ph-plugs"></i>
+                    <span class="disconnect-tooltip">登出在線用戶</span>
+                </span>`;
             }
-
             buttonsHtml += `</div>`;
             return `<td data-col="online">${buttonsHtml}</td>`;
         } },
@@ -2376,33 +2362,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (nestedColumnVisibility['online']) {
                     const isOnline = user.offlineDays === 0;
-                    const isDisabled = user.status === '停用' || user.status === '冻结';
-                    
-                    const badgeBg = isOnline ? '#dcfce7' : '#f1f5f9';
-                    const badgeColor = isOnline ? '#16a34a' : '#64748b';
-                    const dotColor = isOnline ? '#10b981' : '#9ca3af';
-                    
-                    const statusBadge = `
-                        <div class="status-badge-view" style="display: flex; align-items: center; justify-content: center; gap: 4px; background: ${badgeBg}; border-radius: 13px; width: 68px; height: 26px;">
-                            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${dotColor};"></span>
-                            <span style="color: ${badgeColor}; font-size: 12px; font-weight: 500;">${isOnline ? '在线' : '离线'}</span>
-                        </div>
-                    `;
-                    
-                    let actionsHtml = '';
+
+                    let actionsHtml = `<span class="status-dot-icon ${isOnline ? 'online' : 'offline'}"></span>`;
                     if (isOnline) {
                         actionsHtml += `
-                        <div class="online-hover-container">
-                            ${statusBadge}
-                            <a href="#" class="op-link btn-action-kick hover-btn" style="display: flex; align-items: center; justify-content: center; background: #f97316; color: white; border-radius: 4px; text-decoration: none; font-size: 12px;" onclick="window.showConfirmModal('确定要将此会员踢下线吗？', function(){ window.handleKickOfflineUser('${user.uid}', '${user.account}'); }); return false;">踢下线</a>
-                        </div>`;
-                    } else {
-                        actionsHtml += `<div style="width: 68px; height: 26px;">${statusBadge}</div>`;
+                        <span class="online-disconnect-btn" onclick="window.showConfirmModal('确定要将此会员踢下线吗？', function(){ window.handleKickOfflineUser('${user.uid}', '${user.account}'); });">
+                            <i class="ph ph-plugs"></i>
+                            <span class="disconnect-tooltip">登出在線用戶</span>
+                        </span>`;
                     }
 
-                    
                     nestedRowHtml += `<td style="text-align: center;">
-                        <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
+                        <div style="display:flex; gap:6px; align-items:center; justify-content:center;">
                             ${actionsHtml}
                         </div>
                     </td>`;
